@@ -1,60 +1,58 @@
-'use client'
+'use client';
 
 import { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
+import { asset } from '@/lib/asset';
 
-const backgroundImages = [
-  '/gtavi_countdown/assets/back1.png',
-  '/gtavi_countdown/assets/back2.png',
-  '/gtavi_countdown/assets/back3.png'
+// Cinematic crossfading backdrop, scoped to its (position: relative) parent —
+// used behind the hero. A slow Ken Burns zoom adds life without distracting.
+const IMAGES = [
+  asset('media/bg/hero.webp'),
+  asset('media/bg/motel.webp'),
+  asset('media/bg/duo3.webp'),
+  asset('media/bg/cover.webp'),
 ];
 
 export default function BackgroundSlideshow() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [fade, setFade] = useState(true);
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setCurrentIndex((prevIndex) => 
-          (prevIndex + 1) % backgroundImages.length
-        );
-        setFade(true);
-      }, 1000); // Tempo do fade out
-    }, 5000); // Troca a cada 5 segundos
-
-    return () => clearInterval(interval);
+    const id = setInterval(() => setIndex((i) => (i + 1) % IMAGES.length), 7000);
+    return () => clearInterval(id);
   }, []);
 
   return (
-    <Box sx={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      height: '100vh',
-      zIndex: -1,
-      overflow: 'hidden'
-    }}>
-      {backgroundImages.map((image, index) => (
+    <Box aria-hidden sx={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }}>
+      {IMAGES.map((src, i) => (
         <Box
-          key={image}
+          key={src}
           component="img"
-          src={image}
+          src={src}
           alt=""
+          loading={i === 0 ? 'eager' : 'lazy'}
           sx={{
             position: 'absolute',
-            top: 0,
-            left: 0,
+            inset: 0,
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            opacity: index === currentIndex ? (fade ? 1 : 0) : 0,
-            transition: 'opacity 1s ease-in-out',
+            objectPosition: 'center 30%',
+            opacity: i === index ? 1 : 0,
+            transform: i === index ? 'scale(1.08)' : 'scale(1)',
+            transition: 'opacity 1.6s ease-in-out, transform 8s ease-out',
+            filter: 'saturate(1.05) brightness(0.82)',
           }}
         />
       ))}
+      {/* Readability + brand tint */}
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'linear-gradient(180deg, rgba(7,6,13,0.55), rgba(7,6,13,0.35) 40%, rgba(7,6,13,0.85)), radial-gradient(120% 80% at 50% 0%, rgba(157,78,221,0.25), transparent 55%)',
+        }}
+      />
     </Box>
   );
 }

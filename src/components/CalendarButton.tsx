@@ -1,40 +1,36 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  Menu, 
-  MenuItem, 
+import {
+  Menu,
+  MenuItem,
   Button,
   Tooltip,
   ListItemIcon,
   ListItemText,
-  Box
+  Box,
+  type ButtonProps,
 } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
+import { useLanguage } from '@/hooks/useLanguage';
+import { asset } from '@/lib/asset';
 
-export default function CalendarButton() {
+type CalendarButtonProps = Omit<ButtonProps, 'onClick'>;
+
+export default function CalendarButton(props: CalendarButtonProps) {
+  const { translations } = useLanguage();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
 
   const addToGoogleCalendar = () => {
-    const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=GTA+VI+Release&dates=20260526T000000Z/20260526T010000Z&details=GTA+6+is+releasing!&sf=true&output=xml`;
-    window.open(calendarUrl, "_blank");
+    const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=GTA+VI+Release&dates=20261119T000000Z/20261119T010000Z&details=GTA+6+is+releasing!&sf=true&output=xml`;
+    window.open(calendarUrl, '_blank');
     handleClose();
   };
 
   const addToAppleCalendar = () => {
-    const startDate = '20260526T000000';
-    const endDate = '20260526T010000';
-    const title = 'GTA VI Release';
-    const details = 'GTA 6 is releasing!';
-    
     const calendarContent = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
@@ -42,90 +38,64 @@ export default function CalendarButton() {
       'BEGIN:VEVENT',
       `UID:${Date.now()}@gtavi.com`,
       `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
-      `DTSTART:${startDate}`,
-      `DTEND:${endDate}`,
-      `SUMMARY:${title}`,
-      `DESCRIPTION:${details}`,
+      'DTSTART:20261119T000000Z',
+      'DTEND:20261119T010000Z',
+      'SUMMARY:GTA VI Release',
+      'DESCRIPTION:GTA 6 is releasing!',
       'END:VEVENT',
-      'END:VCALENDAR'
+      'END:VCALENDAR',
     ].join('\r\n');
-    
+
     const blob = new Blob([calendarContent], { type: 'text/calendar;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-    
     const link = document.createElement('a');
     link.href = url;
     link.setAttribute('download', 'gta-vi-release.ics');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+    URL.revokeObjectURL(url);
     handleClose();
   };
 
+  const { startIcon, children, variant = 'outlined', ...rest } = props;
+
   return (
     <>
-      <Tooltip title="Add to Calendar">
+      <Tooltip title={translations.addToCalendar}>
         <Button
           onClick={handleClick}
-          startIcon={<EventIcon />}
-          sx={{
-            mt: 4,
-            mb: 4,
-            py: 2,
-            px: 4,
-            fontSize: '1.1rem',
-            fontWeight: 'bold',
-            background: 'linear-gradient(to bottom, #335FCF, #A941C1, #FF5E94, #FF9547)',
-            color: 'white',
-            '&:hover': {
-              opacity: 0.9,
-              background: 'linear-gradient(to bottom, #335FCF, #A941C1, #FF5E94, #FF9547)',
-              transform: 'scale(1.02)',
-            },
-            '&:active': {
-              transform: 'scale(0.98)',
-            },
-            transition: 'all 0.2s ease-in-out',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-            borderRadius: '12px',
-            textTransform: 'none',
-          }}
+          variant={variant}
+          startIcon={startIcon ?? <EventIcon />}
+          {...rest}
         >
+          {children ?? translations.addToCalendar}
         </Button>
       </Tooltip>
-      
+
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleClose}
         PaperProps={{
           sx: {
-            bgcolor: 'grey.800',
-            border: '1px solid',
-            borderColor: 'grey.700',
-          }
+            mt: 1,
+            background: 'rgba(12,10,20,0.96)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid var(--hairline)',
+            color: '#fff',
+          },
         }}
       >
         <MenuItem onClick={addToGoogleCalendar}>
           <ListItemIcon>
-            <Box 
-              component="img" 
-              src="/gtavi_countdown/assets/google-calendar.png" 
-              alt="Google Calendar" 
-              sx={{ width: 24, height: 24 }}
-            />
+            <Box component="img" src={asset('assets/google-calendar.png')} alt="" sx={{ width: 24, height: 24 }} />
           </ListItemIcon>
           <ListItemText>Google Calendar</ListItemText>
         </MenuItem>
         <MenuItem onClick={addToAppleCalendar}>
           <ListItemIcon>
-            <Box 
-              component="img" 
-              src="/gtavi_countdown/assets/apple-calendar.png" 
-              alt="Apple Calendar" 
-              sx={{ width: 24, height: 24 }}
-            />
+            <Box component="img" src={asset('assets/apple-calendar.png')} alt="" sx={{ width: 24, height: 24 }} />
           </ListItemIcon>
           <ListItemText>Apple Calendar</ListItemText>
         </MenuItem>

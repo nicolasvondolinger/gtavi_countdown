@@ -1,239 +1,75 @@
 'use client';
 
+import { Box, Typography } from '@mui/material';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useState } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  IconButton, 
-  MobileStepper,
-  useMediaQuery,
-  useTheme
-} from '@mui/material';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { TRAILERS } from '@/lib/site';
+import SectionHeader from '@/components/ui/SectionHeader';
+import Reveal from '@/components/ui/Reveal';
 
 export default function Trailers() {
-  const { translations } = useLanguage();
-  const [activeTrailer, setActiveTrailer] = useState(0);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  
-  const trailers = [
-    {
-      id: 1,
-      title: "GTA VI Trailer 1",
-      url: "https://www.youtube.com/embed/QdBZY2fkU-0"
-    },
-    {
-      id: 2,
-      title: "GTA VI Trailer 2",
-      url: "https://www.youtube.com/embed/VQRLujxTm3c"
-    }
-  ];
-
-  const handleNext = () => {
-    setActiveTrailer((prevActiveStep) => 
-      prevActiveStep < trailers.length - 1 ? prevActiveStep + 1 : 0
-    );
-  };
-
-  const handleBack = () => {
-    setActiveTrailer((prevActiveStep) => 
-      prevActiveStep > 0 ? prevActiveStep - 1 : trailers.length - 1
-    );
-  };
+  const { translations: t } = useLanguage();
 
   return (
-    <Box sx={{ 
-      mt: 4,
-      width: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center'
-    }}>
-      <Typography 
-        variant="h5" 
-        component="h3" 
-        sx={{ 
-          mb: 3, 
-          fontWeight: 'bold',
-          color: 'white',
-          textShadow: '0 0 8px rgba(255, 0, 102, 0.5)'
+    <Box
+      component="section"
+      id="trailers"
+      sx={{ px: { xs: 2, md: 4 }, py: { xs: 7, md: 11 }, maxWidth: 1180, mx: 'auto' }}
+    >
+      <SectionHeader kicker="Watch" title={t.trailers} subtitle={t.trailersSubtitle} />
+
+      <Box
+        sx={{
+          display: 'grid',
+          gap: { xs: 2.5, md: 3 },
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
         }}
       >
-        {translations.trailers}
-      </Typography>
-      
-      {/* Mobile Carousel */}
-      {isMobile ? (
-        <Box sx={{ 
-          position: 'relative',
-          width: '90%',
-          maxWidth: '600px'
-        }}>
-          <Paper elevation={3} sx={{ 
-            position: 'relative', 
-            overflow: 'hidden', 
-            borderRadius: 2,
-            backgroundColor: 'rgba(30, 30, 30, 0.8)',
-            backdropFilter: 'blur(4px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <Box 
-              component="iframe"
-              src={trailers[activeTrailer].url}
-              title={trailers[activeTrailer].title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              sx={{ 
-                width: '100%', 
-                aspectRatio: '16/9',
-                border: 'none',
-              }}
-            />
-            
-            <Box 
-              sx={{ 
-                position: 'absolute', 
-                top: '50%', 
-                left: 0,
-                right: 0,
-                transform: 'translateY(-50%)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                px: 1
+        {TRAILERS.map((trailer, i) => (
+          <Reveal key={trailer.id} delay={i * 100}>
+            <Box
+              sx={{
+                position: 'relative',
+                borderRadius: 'var(--r-md)',
+                overflow: 'hidden',
+                border: '1px solid var(--hairline)',
+                boxShadow: '0 14px 40px rgba(0,0,0,0.4)',
+                transition: 'transform 0.3s var(--ease-out), box-shadow 0.3s ease, border-color 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  borderColor: 'rgba(255,30,122,0.5)',
+                  boxShadow: '0 20px 50px rgba(255,30,122,0.25)',
+                },
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 3,
+                  zIndex: 1,
+                  background: 'var(--grad-brand)',
+                },
               }}
             >
-              <IconButton 
-                onClick={handleBack}
-                sx={{ 
-                  bgcolor: 'rgba(0, 0, 0, 0.7)', 
-                  color: 'white',
-                  '&:hover': { 
-                    bgcolor: '#ff0066',
-                    transform: 'scale(1.1)'
-                  },
-                  transition: 'all 0.3s ease'
-                }}
-                size="small"
-              >
-                <NavigateBeforeIcon />
-              </IconButton>
-              <IconButton 
-                onClick={handleNext}
-                sx={{ 
-                  bgcolor: 'rgba(0, 0, 0, 0.7)', 
-                  color: 'white',
-                  '&:hover': { 
-                    bgcolor: '#ff0066',
-                    transform: 'scale(1.1)'
-                  },
-                  transition: 'all 0.3s ease'
-                }}
-                size="small"
-              >
-                <NavigateNextIcon />
-              </IconButton>
+              <Box
+                component="iframe"
+                src={`https://www.youtube.com/embed/${trailer.id}`}
+                title={`GTA VI Trailer ${i + 1}`}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                sx={{ width: '100%', aspectRatio: '16 / 9', border: 'none', display: 'block' }}
+              />
             </Box>
-          </Paper>
-          
-          <Typography 
-            variant="subtitle1" 
-            align="center" 
-            sx={{ 
-              mt: 2,
-              color: 'white',
-              fontWeight: '500'
-            }}
-          >
-            {trailers[activeTrailer].title}
-          </Typography>
-          
-          <MobileStepper
-            steps={trailers.length}
-            position="static"
-            activeStep={activeTrailer}
-            sx={{ 
-              bgcolor: 'transparent', 
-              justifyContent: 'center',
-              '& .MuiMobileStepper-dot': { 
-                bgcolor: 'grey.500',
-                width: 10,
-                height: 10
-              },
-              '& .MuiMobileStepper-dotActive': { 
-                bgcolor: '#ff0066',
-                width: 12,
-                height: 12
-              } 
-            }}
-            nextButton={null}
-            backButton={null}
-          />
-        </Box>
-      ) : (
-        // Desktop layout
-        <Box sx={{ 
-          display: 'flex', 
-          flexWrap: 'wrap', 
-          gap: 4, 
-          justifyContent: 'center',
-          width: '100%',
-          maxWidth: '1200px'
-        }}>
-          {trailers.map((trailer) => (
-            <Box 
-              key={trailer.id}
-              sx={{ 
-                width: { xs: '100%', md: 'calc(50% - 16px)' }, 
-                maxWidth: '560px',
-              }}
+            <Typography
+              className="font-mono"
+              sx={{ mt: 1.5, textAlign: 'center', color: 'var(--text-mid)', fontSize: '0.85rem' }}
             >
-              <Paper 
-                elevation={3} 
-                sx={{ 
-                  borderRadius: 2, 
-                  overflow: 'hidden',
-                  backgroundColor: 'rgba(30, 30, 30, 0.8)',
-                  backdropFilter: 'blur(4px)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                  '&:hover': {
-                    transform: 'translateY(-5px)',
-                    boxShadow: '0 10px 20px rgba(255, 0, 102, 0.3)'
-                  }
-                }}
-              >
-                <Box 
-                  component="iframe"
-                  src={trailer.url}
-                  title={trailer.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  sx={{ 
-                    width: '100%', 
-                    aspectRatio: '16/9',
-                    border: 'none', 
-                  }}
-                />
-              </Paper>
-              <Typography 
-                variant="subtitle1" 
-                align="center" 
-                sx={{ 
-                  mt: 2,
-                  color: 'white',
-                  fontWeight: '500'
-                }}
-              >
-                {trailer.title}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
-      )}
+              GTA VI · Trailer {i + 1}
+            </Typography>
+          </Reveal>
+        ))}
+      </Box>
     </Box>
   );
 }

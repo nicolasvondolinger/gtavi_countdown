@@ -1,14 +1,15 @@
-// lib/fonts.ts
-import { Bebas_Neue, Outfit } from 'next/font/google';
+// lib/font.ts
+import { Bebas_Neue, Outfit, JetBrains_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
 
-// Fonte Pricedown para títulos estilo GTA
+// Pricedown — the iconic GTA display face. Used for the logo-style headlines.
 export const pricedown = localFont({
-  src: '../../public/fonts/Pricedown Bl.otf', // Caminho para o arquivo .otf
+  src: '../../public/fonts/Pricedown Bl.otf',
   display: 'swap',
   variable: '--font-pricedown',
 });
 
+// Bebas Neue — tall condensed grotesque for section eyebrows / kickers.
 export const bebasNeue = Bebas_Neue({
   weight: '400',
   subsets: ['latin'],
@@ -16,8 +17,17 @@ export const bebasNeue = Bebas_Neue({
   variable: '--font-bebas-neue',
 });
 
+// Outfit — clean, geometric body/UI typeface.
 export const outfit = Outfit({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-outfit',
+});
+
+// JetBrains Mono — tactical/HUD numerals and technical labels (tabular figures).
+export const jetbrainsMono = JetBrains_Mono({
+  weight: ['400', '500', '700'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-mono',
 });

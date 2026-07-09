@@ -3,6 +3,7 @@
 import { Button } from '@mui/material';
 import Link from 'next/link';
 import { useLanguage } from '@/hooks/useLanguage';
+import { PRE_ORDER_URL } from '@/lib/site';
 
 export default function PurchaseButton() {
   const { translations } = useLanguage();
@@ -10,7 +11,7 @@ export default function PurchaseButton() {
   return (
     <Button
       component={Link}
-      href="https://amzn.to/4jKQeyh"
+      href={PRE_ORDER_URL}
       target="_blank"
       rel="noopener noreferrer"
       variant="contained"

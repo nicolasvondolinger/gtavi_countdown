@@ -4,17 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { Box, IconButton } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { asset } from '@/lib/asset';
 
-const images = [
-  '/gtavi_countdown/assets/carousel/1.jpg',
-  '/gtavi_countdown/assets/carousel/2.jpg',
-  '/gtavi_countdown/assets/carousel/3.jpg',
-  '/gtavi_countdown/assets/carousel/4.jpg',
-  '/gtavi_countdown/assets/carousel/5.jpg',
-  '/gtavi_countdown/assets/carousel/6.jpg',
-  '/gtavi_countdown/assets/carousel/7.jpg',
-  '/gtavi_countdown/assets/carousel/8.jpg'
-];
+const images = Array.from({ length: 8 }, (_, i) => asset(`assets/carousel/${i + 1}.jpg`));
 
 export default function ImageCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);

@@ -6,10 +6,9 @@
     "dev": "next dev --turbopack",
     "start": "next start",
     "lint": "next lint",
-    "build": "next build && next export",
+    "build": "next build",
     "deploy": "npm run build && gh-pages -d out"
   },
-  
   "homepage": "https://github.com/nicolasvondolinger/gtavi_countdown",
   "dependencies": {
     "@emotion/react": "^11.14.0",

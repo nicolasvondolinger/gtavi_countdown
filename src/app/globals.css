@@ -1,0 +1,250 @@
+/* ============================================================
+   GTA VI Countdown — Global design layer
+   Retro-Futurism / Vice City synthwave. Dark-first.
+   ============================================================ */
+
+:root {
+  /* Brand gradient stops (from the GTA VI logo) */
+  --c-blue: #335fcf;
+  --c-purple: #a941c1;
+  --c-pink: #ff5e94;
+  --c-orange: #ff9547;
+
+  /* Working accents */
+  --c-magenta: #ff1e7a;
+  --c-violet: #9d4edd;
+  --c-teal: #2de2e6;
+  --c-sun: #ff9547;
+
+  /* Surfaces */
+  --bg-0: #07060d;
+  --bg-1: #0b0a14;
+  --surface: rgba(18, 16, 28, 0.72);
+  --surface-solid: #12101c;
+  --hairline: rgba(255, 255, 255, 0.1);
+  --hairline-strong: rgba(255, 255, 255, 0.18);
+
+  /* Text */
+  --text-hi: #f4f1fb;
+  --text-mid: rgba(244, 241, 251, 0.72);
+  --text-lo: rgba(244, 241, 251, 0.5);
+
+  /* Signature gradients */
+  --grad-brand: linear-gradient(120deg, var(--c-blue), var(--c-purple) 38%, var(--c-pink) 68%, var(--c-orange));
+  --grad-hot: linear-gradient(135deg, var(--c-violet), var(--c-magenta));
+  --grad-sunset: linear-gradient(180deg, #ff5e94, #ff9547);
+
+  /* Glows */
+  --glow-pink: 0 0 24px rgba(255, 30, 122, 0.45);
+  --glow-teal: 0 0 24px rgba(45, 226, 230, 0.35);
+
+  /* Radii */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-pill: 999px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --nav-h: 68px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-h) + 16px);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background-color: var(--bg-0);
+  color: var(--text-hi);
+  /* Vice City horizon: violet zenith + magenta/orange sunset near the bottom */
+  background-image:
+    radial-gradient(120% 80% at 50% 108%, rgba(255, 122, 61, 0.16), transparent 55%),
+    radial-gradient(90% 60% at 50% 100%, rgba(255, 30, 122, 0.2), transparent 60%),
+    radial-gradient(100% 70% at 50% -10%, rgba(157, 78, 221, 0.22), transparent 60%),
+    linear-gradient(180deg, #0a0812, #07060d 60%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* Fixed texture overlays (grain + CRT scanlines). Non-interactive. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.16) 3px,
+    rgba(0, 0, 0, 0) 4px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* Keep app content above the texture overlays */
+main,
+footer,
+nav {
+  position: relative;
+  z-index: 2;
+}
+
+/* ---- Typography helpers ---- */
+.gta-display {
+  font-family: var(--font-pricedown), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 0.92;
+}
+
+.font-kicker {
+  font-family: var(--font-bebas-neue), sans-serif;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.font-mono {
+  font-family: var(--font-mono), monospace;
+}
+
+.gradient-text {
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.gta-gradient-text {
+  background: linear-gradient(var(--c-purple), var(--c-pink), var(--c-orange));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-family: var(--font-pricedown), sans-serif;
+}
+
+/* ---- Scrollbar ---- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-magenta) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--c-violet), var(--c-magenta));
+  border-radius: 999px;
+  border: 2px solid var(--bg-0);
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---- Selection ---- */
+::selection {
+  background: rgba(255, 30, 122, 0.35);
+  color: #fff;
+}
+
+/* ---- Accessible focus ring ---- */
+:focus-visible {
+  outline: 2px solid var(--c-teal);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---- Reusable animations ---- */
+@keyframes floatY {
+  from { transform: translateY(0); }
+  to { transform: translateY(-22px); }
+}
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.85; filter: drop-shadow(0 0 8px rgba(255, 30, 122, 0.5)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 22px rgba(255, 30, 122, 0.9)); }
+}
+@keyframes gridScroll {
+  from { background-position: 0 0; }
+  to { background-position: 0 44px; }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+@keyframes scrollHint {
+  0% { transform: translateY(0); opacity: 0; }
+  40% { opacity: 1; }
+  80% { transform: translateY(10px); opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll-reveal utility (opt-in via IntersectionObserver adding .in-view) */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  will-change: opacity, transform;
+}
+.reveal.in-view {
+  opacity: 1;
+  transform: none;
+}
+
+/* Perspective synthwave grid (hero floor) */
+.synthwave-grid {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 200%;
+  height: 45vh;
+  transform: translateX(-50%) perspective(50vh) rotateX(72deg);
+  transform-origin: bottom center;
+  background-image:
+    linear-gradient(rgba(255, 30, 122, 0.55) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45, 226, 230, 0.4) 1px, transparent 1px);
+  background-size: 44px 44px;
+  animation: gridScroll 1.4s linear infinite;
+  mask-image: linear-gradient(to top, #000 0%, transparent 82%);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 82%);
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .synthwave-grid { animation: none; }
+}
