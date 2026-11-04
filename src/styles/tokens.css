@@ -1,0 +1,31 @@
+/* Design tokens from design/DESIGN.md. Change them there first. */
+@theme {
+  --color-bg: #0b0e14;
+  --color-surface: #131823;
+  --color-raised: #1c2230;
+  --color-line: #262d3b;
+  --color-edge: #3a4252;
+  --color-control: #646d7e;
+  --color-text: #f3f4f6;
+  --color-body: #d7dae0;
+  --color-soft: #c4c8d0;
+  --color-muted: #9ca3af;
+  --color-dim: #858c99;
+  --color-accent: #ff2a75;
+  --color-ink: #0b0e14;
+  --color-official: #00e5ff;
+  --color-leak: #ffb800;
+  --color-theory: #c9ced8;
+  --color-added: #34d399;
+  --color-removed: #f87171;
+
+  --radius-image: 2px;
+  --radius-control: 4px;
+  --radius-panel: 6px;
+  --radius-modal: 8px;
+
+  --font-display: var(--font-barlow-condensed), 'Arial Narrow', sans-serif;
+  --font-ui: var(--font-barlow), system-ui, sans-serif;
+  --font-read: var(--font-archivo), system-ui, sans-serif;
+  --font-data: var(--font-jetbrains), ui-monospace, monospace;
+}

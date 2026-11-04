@@ -35,7 +35,7 @@ Reading: a GTA series fan wiki and forum for players, with GTA VI featured durin
 ## 4. Colour
 
 ```design-tokens
-fonts: Bahnschrift, Archivo, JetBrains Mono
+fonts: Barlow Condensed, Barlow, Archivo, JetBrains Mono
 colors: #0B0E14, #131823, #1C2230, #262D3B, #646D7E, #F3F4F6, #D7DAE0, #9CA3AF, #858C99, #FF2A75, #00E5FF, #FFB800, #C9CED8, #34D399, #F87171
 radii: 2px, 4px, 6px, 8px
 ```
@@ -64,7 +64,7 @@ The primary button is `#0B0E14` text on `#FF2A75` (5.4:1). White on pink fails A
 - Reading: the font Archivo, 15–19px, 160%. Article column 660px (≈ 70 characters).
 - Data: the font JetBrains Mono, for the countdown, specs, counts, timestamps and diffs only.
 - Scale ratio 1.25: 12 · 13 · 15 · 17 · 21 · 26 · 33 · 41 · 56 · 72.
-- Bahnschrift ships with Windows only. For the web build use a licensed DIN-style family (D-DIN or Barlow Condensed) and recheck the line lengths.
+- The mockups use Bahnschrift, which ships with Windows only. The web build uses the fonts Barlow Condensed (display) and Barlow (interface).
 
 ## 6. Space and grid
 
