@@ -1,14 +1,8 @@
-const isGithubPages = process.env.NODE_ENV === 'production';
+import type { NextConfig } from 'next';
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  output: 'export',
-  images: {
-    unoptimized: true,
-    domains: ['www.youtube.com'],
-  },
-  basePath: isGithubPages ? '/gtavi_countdown' : '',
-  assetPrefix: isGithubPages ? '/gtavi_countdown/' : '',
+const nextConfig: NextConfig = {
+  output: 'standalone',
+  images: { formats: ['image/avif', 'image/webp'] },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
