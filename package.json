@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit",
     "db:up": "docker compose up -d --wait db",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx src/server/db/migrate.ts"
+    "db:migrate": "tsx src/server/db/migrate.ts",
+    "db:seed": "tsx src/server/db/seed.ts",
+    "db:seed:sample": "tsx src/server/db/seed-sample.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.4",
