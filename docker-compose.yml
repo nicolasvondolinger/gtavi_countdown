@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: gta-wiki-db
+    environment:
+      POSTGRES_USER: gtawiki
+      POSTGRES_PASSWORD: gtawiki
+      POSTGRES_DB: gtawiki
+    ports:
+      - '5434:5432'
+    volumes:
+      - gta-wiki-db:/var/lib/postgresql/data
+      - ./docker/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U gtawiki']
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  gta-wiki-db:
