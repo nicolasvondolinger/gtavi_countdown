@@ -21,7 +21,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
               {c.label}
             </Link>
           ) : (
-            <span aria-current={i === items.length - 1 ? 'page' : undefined} className="text-text">
+            <span aria-current={i === items.length - 1 ? 'page' : undefined} className={i === items.length - 1 ? 'text-text' : 'text-muted'}>
               {c.label}
             </span>
           )}
