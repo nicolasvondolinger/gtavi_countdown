@@ -15,6 +15,13 @@
       "when": 1793835974391,
       "tag": "0001_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793837251366,
+      "tag": "0002_profile_consent",
+      "breakpoints": true
     }
   ]
 }

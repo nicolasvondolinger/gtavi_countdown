@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Archivo, Barlow, Barlow_Condensed, JetBrains_Mono } from 'next/font/google';
+import { MobileAccount } from '@/components/layout/AccountArea';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
@@ -24,7 +25,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="flex min-h-dvh flex-col">
         <TopAd />
         <Header />
-        <MobileBar account={null} />
+        <MobileBar account={<MobileAccount />} />
         <main className="flex-1">{children}</main>
         <Footer />
         <BottomNav />

@@ -122,6 +122,8 @@ export const profiles = pgTable(
     role: role('role').notNull().default('member'),
     bio: text('bio'),
     onboardedAt: timestamp('onboarded_at', { withTimezone: true }),
+    termsAcceptedAt: timestamp('terms_accepted_at', { withTimezone: true }),
+    marketingOptIn: boolean('marketing_opt_in').notNull().default(false),
     createdAt: createdAt(),
   },
   t => [uniqueIndex('profiles_username_idx').on(sql`lower(${t.username})`)],
