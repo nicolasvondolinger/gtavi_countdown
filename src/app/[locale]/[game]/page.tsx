@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import { Gallery } from '@/components/article/Gallery';
 import { AdSlot } from '@/components/ui/AdSlot';
 import { ArtSlot } from '@/components/ui/ArtSlot';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
@@ -100,6 +101,7 @@ export default async function GameHub({ params }: Props) {
               </ul>
             </section>
           )}
+          <Gallery images={game.gallery} title={game.name} />
         </div>
         <aside className="flex flex-col gap-7">
           <section aria-label={t('{game} in the forums', { game: game.shortName })}>

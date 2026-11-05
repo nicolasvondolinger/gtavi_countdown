@@ -88,6 +88,15 @@ test('longer Portuguese labels still fit at 1024px', async ({ page }) => {
   }
 });
 
+test('a game hub shows its art and its people have pages', async ({ page }) => {
+  await page.goto('/gta-5');
+  await expect(page.getByRole('img', { name: 'Grand Theft Auto V key art' })).toBeVisible();
+  await page.getByRole('button', { name: 'Open image 1 of 18' }).click();
+  await expect(page.getByRole('dialog').getByText('1 / 18')).toBeVisible();
+  await page.goto('/pt/gta-5/characters/lester-crest');
+  await expect(page.getByText('quem planeja os golpes').first()).toBeVisible();
+});
+
 test('the Discord invite is one click away', async ({ page }, info) => {
   desktopOnly(info.project.name);
   await page.goto('/');

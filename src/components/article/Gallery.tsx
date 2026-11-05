@@ -9,6 +9,8 @@ export function Gallery({ images, title }: { images: string[]; title: string }) 
   const t = useT();
   const dialog = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState<number | null>(null);
+  // Posters and covers would lose their heads in a wide tile, so they show whole.
+  const [tall, setTall] = useState<string[]>([]);
 
   useEffect(() => {
     if (open !== null) dialog.current?.showModal();
@@ -25,8 +27,8 @@ export function Gallery({ images, title }: { images: string[]; title: string }) 
       <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {images.map((src, i) => (
           <li key={src} className={i === 0 ? 'col-span-2 sm:row-span-2' : ''}>
-            <button type="button" onClick={() => setOpen(i)} aria-label={t('Open image {n} of {total}', { n: i + 1, total: images.length })} className={`group relative block aspect-video w-full overflow-hidden rounded-image ${i === 0 ? 'sm:aspect-auto sm:h-full' : ''}`}>
-              <Image src={`/media/${src}`} alt={title} fill sizes={i === 0 ? '(min-width: 1024px) 440px, 100vw' : '(min-width: 1024px) 220px, 50vw'} className="object-cover transition-opacity duration-150 group-hover:opacity-85" />
+            <button type="button" onClick={() => setOpen(i)} aria-label={t('Open image {n} of {total}', { n: i + 1, total: images.length })} className={`group relative block aspect-video w-full overflow-hidden rounded-image bg-surface ${i === 0 ? 'sm:aspect-auto sm:h-full' : ''}`}>
+              <Image src={`/media/${src}`} alt={title} fill onLoad={e => e.currentTarget.naturalHeight >= e.currentTarget.naturalWidth * 0.9 && setTall(list => [...list, src])} sizes={i === 0 ? '(min-width: 1024px) 440px, 100vw' : '(min-width: 1024px) 220px, 50vw'} className={`${tall.includes(src) ? 'object-contain' : 'object-cover'} transition-opacity duration-150 group-hover:opacity-85`} />
             </button>
           </li>
         ))}

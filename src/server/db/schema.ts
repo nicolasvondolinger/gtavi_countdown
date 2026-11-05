@@ -105,6 +105,7 @@ export const games = pgTable('games', {
   sortOrder: integer('sort_order').notNull(),
   summary: text('summary'),
   image: text('image'),
+  gallery: jsonb('gallery').$type<string[]>().notNull().default([]),
   // Label and value pairs shown on the game hub.
   facts: jsonb('facts').$type<{ label: string; value: string }[]>().notNull().default([]),
   i18n: jsonb('i18n').$type<{ pt?: { summary?: string; setting?: string; leads?: string; facts?: { label: string; value: string }[] } }>().notNull().default({}),

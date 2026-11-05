@@ -7,7 +7,7 @@ import { db, schema, sql } from './index';
 const { games, pages, revisions, channels, tags, news, mapMarkers, modCategories, vehicles, videos, builds } = schema;
 
 type Fact = { label: string; value: string };
-type GameSeed = { slug: string; name: string; short: string; year: number; universe: 'hd' | '3d' | '2d'; setting: string; leads: string; facts?: Fact[]; summary?: string; image?: string; releaseAt?: Date; pt?: { summary?: string; setting?: string; leads?: string; facts?: Fact[] } };
+type GameSeed = { slug: string; name: string; short: string; year: number; universe: 'hd' | '3d' | '2d'; setting: string; leads: string; facts?: Fact[]; summary?: string; image?: string; gallery?: string[]; releaseAt?: Date; pt?: { summary?: string; setting?: string; leads?: string; facts?: Fact[] } };
 
 const GAMES: GameSeed[] = [
   {
@@ -23,7 +23,8 @@ const GAMES: GameSeed[] = [
     pt: { summary: 'O mundo online de Grand Theft Auto V, atualizado há mais de uma década.', leads: 'Seu próprio personagem', facts: [{ label: 'Lançamento', value: '1 de outubro de 2013' }, { label: 'Desenvolvedora', value: 'Rockstar North' }, { label: 'Cenário', value: 'Los Santos e Blaine County' }, { label: 'Universo', value: 'Universo HD' }] },
   },
   {
-    slug: 'gta-5', name: 'Grand Theft Auto V', short: 'GTA V', year: 2013, universe: 'hd', setting: 'Los Santos, Blaine County', leads: 'Michael, Franklin, Trevor',
+    slug: 'gta-5', name: 'Grand Theft Auto V', short: 'GTA V', year: 2013, universe: 'hd', setting: 'Los Santos, Blaine County', leads: 'Michael, Franklin, Trevor', image: 'games/gta-5/key-art.webp',
+    gallery: ['trio-names', 'cover', 'trio-panels', 'the-hunt', 'the-desert', 'blitz-play', 'pest-control', 'preparation', 'the-trunk', 'by-land', 'by-sea', 'obey-9f', 'buzzard', 'vinewood', 'stop-and-frisk', 'starlet', 'beach-weather', 'lithograph'].map(name => `games/gta-5/${name}.webp`),
     summary: 'Michael, Franklin and Trevor run heists across Los Santos and Blaine County.',
     facts: [{ label: 'Released', value: '17 September 2013' }, { label: 'Developer', value: 'Rockstar North' }, { label: 'Platforms', value: 'PS3, Xbox 360, PS4, Xbox One, PC, PS5, Xbox Series X|S' }, { label: 'Setting', value: 'Los Santos and Blaine County, San Andreas' }, { label: 'Universe', value: 'HD universe' }],
     pt: { summary: 'Michael, Franklin e Trevor planejam golpes por Los Santos e Blaine County.', facts: [{ label: 'Lançamento', value: '17 de setembro de 2013' }, { label: 'Desenvolvedora', value: 'Rockstar North' }, { label: 'Plataformas', value: 'PS3, Xbox 360, PS4, Xbox One, PC, PS5, Xbox Series X|S' }, { label: 'Cenário', value: 'Los Santos e Blaine County, San Andreas' }, { label: 'Universo', value: 'Universo HD' }] },
@@ -100,9 +101,11 @@ function pack6(slug: string, title: string, pack: 'ultimate' | 'vintage', image:
     pt: { summary: `${title} é um veículo mostrado nas imagens oficiais da ${pt} de Grand Theft Auto VI.`, body: `${title} é um veículo mostrado nas imagens oficiais da ${pt} de Grand Theft Auto VI.\n\nVeja o guia [${pt}](/gta-6/guides/${link}) para conhecer tudo o que vem no pacote. As especificações serão adicionadas depois dos testes no jogo.`, infobox: [{ label: 'Vem com', value: pt }, { label: 'Jogo', value: 'Grand Theft Auto VI' }] },
   };
 }
-function plain(game: string, section: Sec, slug: string, title: string, en: string, pt: string, image?: string): PageSeed {
-  return { game, section, slug, title, summary: en, body: en, image, pt: { summary: pt, body: pt } };
+function plain(game: string, section: Sec, slug: string, title: string, en: string, pt: string, image?: string, gallery?: string[]): PageSeed {
+  return { game, section, slug, title, summary: en, body: en, image, gallery, pt: { summary: pt, body: pt } };
 }
+const art5 = (...names: string[]) => names.map(name => `games/gta-5/${name}.webp`);
+const person5 = (slug: string, title: string, en: string, pt: string, ...names: string[]) => plain('gta-5', 'characters', slug, title, en, pt, art5(names[0]!)[0], art5(...names));
 
 const PAGES: PageSeed[] = [
   char6('lucia', 'Lucia Caminos', ['Protagonist', 'Protagonista'], 'lucia', 'people/lucia-caminos/10.webp', [...range('people/lucia-caminos', 10), ...DUO.slice(0, 6)],
@@ -169,15 +172,30 @@ const PAGES: PageSeed[] = [
   pack6('one-eyed-willie', 'One-Eyed Willie', 'ultimate', 'editions/ultimate/one-eyed-willie-01.webp', UE('one-eyed-willie', 3)),
   pack6('squalo', 'Squalo', 'ultimate', 'editions/ultimate/squalo-01.webp', UE('squalo', 4)),
   pack6('vapid-stanier', 'Vapid Stanier', 'vintage', 'editions/vintage/pack-vapid-stanier-01.webp', [1, 2, 3, 4].map(i => `editions/vintage/pack-vapid-stanier-0${i}.webp`)),
-  plain('gta-5', 'characters', 'michael-de-santa', 'Michael De Santa', 'Michael De Santa is a retired bank robber living in Rockford Hills under witness protection, and one of the three protagonists of Grand Theft Auto V.', 'Michael De Santa é um assaltante de bancos aposentado que vive em Rockford Hills sob proteção a testemunhas, e um dos três protagonistas de Grand Theft Auto V.'),
-  plain('gta-5', 'characters', 'franklin-clinton', 'Franklin Clinton', 'Franklin Clinton is a repo man from Strawberry and one of the three protagonists of Grand Theft Auto V.', 'Franklin Clinton é um retomador de carros de Strawberry e um dos três protagonistas de Grand Theft Auto V.'),
-  plain('gta-5', 'characters', 'trevor-philips', 'Trevor Philips', 'Trevor Philips is Michael’s former partner, living in Blaine County, and one of the three protagonists of Grand Theft Auto V.', 'Trevor Philips é o antigo parceiro de Michael, vive em Blaine County e é um dos três protagonistas de Grand Theft Auto V.'),
-  plain('gta-5', 'characters', 'lamar-davis', 'Lamar Davis', 'Lamar Davis is Franklin’s best friend from Chamberlain Hills.', 'Lamar Davis é o melhor amigo de Franklin, de Chamberlain Hills.'),
+  person5('michael-de-santa', 'Michael De Santa', 'Michael De Santa is a retired bank robber living in Rockford Hills under witness protection, and one of the three protagonists of Grand Theft Auto V.', 'Michael De Santa é um assaltante de bancos aposentado que vive em Rockford Hills sob proteção a testemunhas, e um dos três protagonistas de Grand Theft Auto V.', 'michael-01', 'michael-02', 'michael-03', 'michael-04', 'michael-robbery', 'vinewood', 'preparation'),
+  person5('franklin-clinton', 'Franklin Clinton', 'Franklin Clinton is a repo man from Strawberry and one of the three protagonists of Grand Theft Auto V.', 'Franklin Clinton é um retomador de carros de Strawberry e um dos três protagonistas de Grand Theft Auto V.', 'franklin-01', 'franklin-02', 'franklin-03', 'franklin-04', 'franklin-and-chop'),
+  person5('trevor-philips', 'Trevor Philips', 'Trevor Philips is Michael’s former partner, living in Blaine County, and one of the three protagonists of Grand Theft Auto V.', 'Trevor Philips é o antigo parceiro de Michael, vive em Blaine County e é um dos três protagonistas de Grand Theft Auto V.', 'trevor-01', 'trevor-02', 'trevor-03', 'trevor-04', 'trevor-05'),
+  person5('lamar-davis', 'Lamar Davis', 'Lamar Davis is Franklin’s best friend from Chamberlain Hills.', 'Lamar Davis é o melhor amigo de Franklin, de Chamberlain Hills.', 'lamar'),
+  person5('amanda-de-santa', 'Amanda De Santa', 'Amanda De Santa is Michael\u2019s wife and the mother of Jimmy and Tracey.', 'Amanda De Santa é a esposa de Michael e mãe de Jimmy e Tracey.', 'amanda'),
+  person5('jimmy-de-santa', 'Jimmy De Santa', 'Jimmy De Santa is the son of Michael and Amanda De Santa.', 'Jimmy De Santa é filho de Michael e Amanda De Santa.', 'tracey-and-jimmy'),
+  person5('tracey-de-santa', 'Tracey De Santa', 'Tracey De Santa is the daughter of Michael and Amanda De Santa.', 'Tracey De Santa é filha de Michael e Amanda De Santa.', 'tracey', 'tracey-and-jimmy'),
+  person5('lester-crest', 'Lester Crest', 'Lester Crest is Michael\u2019s old friend and the planner behind the crew\u2019s heists.', 'Lester Crest é um velho amigo de Michael e quem planeja os golpes do grupo.', 'lester'),
+  person5('chop', 'Chop', 'Chop is the Rottweiler who stays with Franklin.', 'Chop é o rottweiler que fica com Franklin.', 'chop', 'franklin-and-chop'),
+  person5('dave-norton', 'Dave Norton', 'Dave Norton is the FIB agent who helped Michael fake his death.', 'Dave Norton é o agente do FIB que ajudou Michael a forjar a própria morte.', 'dave-norton'),
+  person5('isiah-friedlander', 'Dr. Isiah Friedlander', 'Dr. Isiah Friedlander is Michael\u2019s psychiatrist.', 'Dr. Isiah Friedlander é o psiquiatra de Michael.', 'friedlander'),
+  person5('simeon-yetarian', 'Simeon Yetarian', 'Simeon Yetarian owns Premium Deluxe Motorsport, the dealership where Franklin works at the start of the game.', 'Simeon Yetarian é dono da Premium Deluxe Motorsport, a concessionária onde Franklin trabalha no início do jogo.', 'simeon'),
+  person5('tonya-wiggins', 'Tonya Wiggins', 'Tonya Wiggins is a friend of Franklin who asks him for help with tow truck jobs.', 'Tonya Wiggins é uma amiga de Franklin que pede ajuda com serviços de guincho.', 'tonya'),
+  person5('wade-hebert', 'Wade Hebert', 'Wade Hebert is Trevor\u2019s loyal associate in Blaine County.', 'Wade Hebert é o parceiro leal de Trevor em Blaine County.', 'wade'),
+  person5('nervous-ron', 'Nervous Ron', 'Nervous Ron is Trevor\u2019s paranoid associate in Blaine County.', 'Nervous Ron é o parceiro paranoico de Trevor em Blaine County.', 'nervous-ron'),
+  person5('maude', 'Maude', 'Maude is a bail bond agent who hires Trevor to catch fugitives.', 'Maude é uma agente de fianças que contrata Trevor para capturar fugitivos.', 'maude'),
+  person5('tao-cheng', 'Tao Cheng', 'Tao Cheng is the son of Triad leader Wei Cheng.', 'Tao Cheng é filho do líder da Tríade Wei Cheng.', 'tao-cheng'),
   plain('gta-5', 'vehicles', 'infernus', 'Pegassi Infernus', 'The Pegassi Infernus is a two-door super car.', 'O Pegassi Infernus é um superesportivo de duas portas.'),
   plain('gta-5', 'vehicles', 'zentorno', 'Pegassi Zentorno', 'The Pegassi Zentorno is a two-door super car.', 'O Pegassi Zentorno é um superesportivo de duas portas.'),
   plain('gta-5', 'vehicles', 'adder', 'Truffade Adder', 'The Truffade Adder is a two-door super car.', 'O Truffade Adder é um superesportivo de duas portas.'),
-  plain('gta-5', 'locations', 'los-santos', 'Los Santos', 'Los Santos is the city at the centre of Grand Theft Auto V.', 'Los Santos é a cidade no centro de Grand Theft Auto V.'),
-  plain('gta-5', 'locations', 'blaine-county', 'Blaine County', 'Blaine County is the rural region north of Los Santos.', 'Blaine County é a região rural ao norte de Los Santos.'),
+  plain('gta-5', 'vehicles', 'obey-9f', 'Obey 9F', 'The Obey 9F is a two-door sports car.', 'O Obey 9F é um carro esportivo de duas portas.', art5('obey-9f')[0], art5('obey-9f')),
+  plain('gta-5', 'vehicles', 'buzzard', 'Nagasaki Buzzard', 'The Nagasaki Buzzard is an attack helicopter.', 'O Nagasaki Buzzard é um helicóptero de ataque.', art5('buzzard')[0], art5('buzzard')),
+  plain('gta-5', 'locations', 'los-santos', 'Los Santos', 'Los Santos is the city at the centre of Grand Theft Auto V.', 'Los Santos é a cidade no centro de Grand Theft Auto V.', art5('vinewood')[0], art5('vinewood', 'michael-04', 'beach-weather', 'by-sea', 'starlet')),
+  plain('gta-5', 'locations', 'blaine-county', 'Blaine County', 'Blaine County is the rural region north of Los Santos.', 'Blaine County é a região rural ao norte de Los Santos.', art5('the-desert')[0], art5('the-desert', 'trevor-02', 'trevor-03', 'trevor-04', 'tao-cheng')),
   plain('gta-5', 'locations', 'mount-chiliad', 'Mount Chiliad', 'Mount Chiliad is the tallest mountain in Blaine County.', 'Mount Chiliad é a montanha mais alta de Blaine County.'),
   { ...plain('gta-5', 'guides', 'cheat-codes', 'Cheat codes', 'Cheat codes for Grand Theft Auto V by platform.', 'Códigos de trapaça de Grand Theft Auto V por plataforma.'), pt: { title: 'Códigos de trapaça', summary: 'Códigos de trapaça de Grand Theft Auto V por plataforma.', body: 'Códigos de trapaça de Grand Theft Auto V por plataforma.' } },
   { ...plain('gta-5', 'guides', 'spaceship-parts', 'Spaceship parts', 'All 50 spaceship parts collected for Omega in Grand Theft Auto V.', 'As 50 peças de nave coletadas para Omega em Grand Theft Auto V.'), pt: { title: 'Peças de nave', summary: 'As 50 peças de nave coletadas para Omega em Grand Theft Auto V.', body: 'As 50 peças de nave coletadas para Omega em Grand Theft Auto V.' } },
@@ -223,12 +241,14 @@ const VEHICLES: [game: string, slug: string, name: string, cls: string, img: str
   ['gta-5', 'infernus', 'Pegassi Infernus', 'Super', null, 2],
   ['gta-5', 'zentorno', 'Pegassi Zentorno', 'Super', null, 2],
   ['gta-5', 'adder', 'Truffade Adder', 'Super', null, 2],
+  ['gta-5', 'obey-9f', 'Obey 9F', 'Sports', 'games/gta-5/obey-9f.webp', 2],
+  ['gta-5', 'buzzard', 'Nagasaki Buzzard', 'Helicopter', 'games/gta-5/buzzard.webp', 4],
 ];
 
 export async function seedFacts() {
   const gameId: Record<string, number> = {};
   for (const [i, g] of GAMES.entries()) {
-    const values = { slug: g.slug, name: g.name, shortName: g.short, year: g.year, universe: g.universe, setting: g.setting, leads: g.leads, facts: g.facts ?? [], summary: g.summary, image: g.image, releaseAt: g.releaseAt, sortOrder: i, i18n: g.pt ? { pt: g.pt } : {} };
+    const values = { slug: g.slug, name: g.name, shortName: g.short, year: g.year, universe: g.universe, setting: g.setting, leads: g.leads, facts: g.facts ?? [], summary: g.summary, image: g.image, gallery: g.gallery ?? [], releaseAt: g.releaseAt, sortOrder: i, i18n: g.pt ? { pt: g.pt } : {} };
     const [row] = await db.insert(games).values(values).onConflictDoUpdate({ target: games.slug, set: values }).returning({ id: games.id });
     gameId[g.slug] = row!.id;
   }
@@ -284,10 +304,10 @@ export async function seedFacts() {
 
   const ids = videosData.map(v => v.youtubeId);
   await db.delete(videos).where(notInArray(videos.youtubeId, ids));
-  for (const [position, v] of videosData.entries()) {
-    const set = { title: v.title, gameId: v.game ? gameId[v.game] : null, kind: v.kind, position };
-    await db.insert(videos).values({ youtubeId: v.youtubeId, ...set }).onConflictDoUpdate({ target: videos.youtubeId, set });
-  }
+  await db
+    .insert(videos)
+    .values(videosData.map((v, position) => ({ youtubeId: v.youtubeId, title: v.title, gameId: v.game ? gameId[v.game] : null, kind: v.kind, position })))
+    .onConflictDoUpdate({ target: videos.youtubeId, set: { title: dsql`excluded.title`, gameId: dsql`excluded.game_id`, kind: dsql`excluded.kind`, position: dsql`excluded.position` } });
   return gameId;
 }
 

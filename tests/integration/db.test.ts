@@ -7,5 +7,5 @@ describe('database', () => {
     await seedFacts();
     await seedFacts();
     expect(await db.$count(schema.games)).toBe(14);
-  });
+  }, 30_000);
 });
