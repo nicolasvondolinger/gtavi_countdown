@@ -12,9 +12,10 @@ export function Theories({ theories, pageId, path }: { theories: Awaited<ReturnT
       {theories.map((t, i) => {
         const pct = t.total ? Math.round((t.plausible / t.total) * 100) : 0;
         return (
-          <details key={t.id} open={i === 0} className="border-t border-line py-3.5">
-            <summary className="flex cursor-pointer list-none gap-4 [&::-webkit-details-marker]:hidden">
-              <Votes kind="theory" id={t.id} score={t.score} />
+          <div key={t.id} className="flex gap-4 border-t border-line py-3.5">
+            <Votes kind="theory" id={t.id} score={t.score} />
+            <details open={i === 0} className="min-w-0 flex-1">
+            <summary className="flex cursor-pointer list-none [&::-webkit-details-marker]:hidden">
               <span className="flex min-w-0 flex-1 flex-col gap-2">
                 <span className="text-[17px] font-semibold">{t.title}</span>
                 <span className="flex flex-wrap items-center gap-3">
@@ -23,12 +24,13 @@ export function Theories({ theories, pageId, path }: { theories: Awaited<ReturnT
                 </span>
               </span>
             </summary>
-            <div className="mt-2 flex flex-col gap-2 pl-10">
+            <div className="mt-2 flex flex-col gap-2">
               <p className="font-read text-[15px]/[1.6] text-soft">{t.body}</p>
               <p className="text-[13px] text-muted">Proposed by {t.author ?? 'a former member'}, {timeAgo(t.createdAt)}</p>
               <Status kind="theory" />
             </div>
-          </details>
+            </details>
+          </div>
         );
       })}
       <TheoryForm pageId={pageId} path={path} />
