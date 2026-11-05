@@ -38,7 +38,8 @@ Reference scale: launch-week spike of read traffic, low write volume. Reads must
 
 | Route type | Strategy |
 |---|---|
-| Home, `/games`, game hubs, articles, news, forum lists | Server-rendered, cached, `revalidate` by tag when content changes, 60 s time-based fallback |
+| Home, `/games`, game hubs, articles, stories, threads | Server-rendered and cached, revalidated by path when content changes, 30 to 300 s time-based fallback |
+| News and forum lists | Dynamic, because filters live in the URL. Put a short CDN cache in front for launch |
 | Search, history, profile, compare, builder | Dynamic per request |
 | Viewer-specific bits (vote state, account menu) | Read per request in dynamic pages. On cached pages they load in small client islands so the page stays cacheable |
 | Countdown | Client island counting to a single instant, `2026-11-19T00:00:00Z`, server-rendered with the current value |
