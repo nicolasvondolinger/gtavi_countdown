@@ -3,15 +3,19 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Infobox } from '@/components/article/Infobox';
 import { Markdown } from '@/components/article/Markdown';
+import { Talk } from '@/components/article/Talk';
+import { Theories } from '@/components/article/Theories';
 import { AdSlot } from '@/components/ui/AdSlot';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
 import { Meta } from '@/components/ui/Meta';
 import { Status } from '@/components/ui/Status';
 import { Tag } from '@/components/ui/Tag';
+import { MyVotes } from '@/components/ui/Votes';
 import { timeAgo } from '@/lib/format';
 import { SECTION_LABEL, isSection } from '@/lib/sections';
 import { tableOfContents } from '@/lib/toc';
+import { getComments, getTheories, type Discussion } from '@/server/wiki/community';
 import { getPage } from '@/server/wiki/queries';
 
 export const revalidate = 60;
@@ -39,6 +43,8 @@ export default async function ArticlePage(props: Props) {
   const base = `/${game.slug}/${page.section}/${page.slug}`;
   const body = revision?.body ?? page.summary;
   const toc = tableOfContents(body);
+  const [theories, comments] = await Promise.all([getTheories(page.id), getComments(page.id)]);
+  const commentIds = (list: Discussion[]): number[] => list.flatMap(c => [c.id, ...commentIds(c.replies)]);
 
   return (
     <>
@@ -46,6 +52,7 @@ export default async function ArticlePage(props: Props) {
         <nav aria-label="On this page" className="sticky top-6 hidden flex-col gap-3 self-start pt-[92px] lg:flex">
           <p className="text-[13px] font-semibold">On this page</p>
           {toc.map(item => <a key={item.id} href={`#${item.id}`} className="text-sm text-muted hover:text-text">{item.label}</a>)}
+          <a href="#theories" className="text-sm text-muted hover:text-text">Theories</a>
           <a href="#talk" className="text-sm text-muted hover:text-text">Talk</a>
         </nav>
         <article className="flex min-w-0 flex-col gap-4 lg:gap-5">
@@ -54,16 +61,23 @@ export default async function ArticlePage(props: Props) {
           <Meta>
             <Tag href={`/${game.slug}`}>{game.shortName}</Tag>
             {page.status && <Status kind={page.status} source={page.source} />}
+            {revision?.sourceKind === 'community' && <Status kind="leak" source={revision.source} />}
             {revision && <span>Edited {timeAgo(revision.createdAt)}</span>}
           </Meta>
           <div className="flex gap-6 border-b border-line">
             <span aria-current="page" className="border-b-2 border-accent py-2 text-[15px] font-semibold">Article</span>
-            <a href="#talk" className="py-2 text-[15px] text-muted hover:text-text">Talk</a>
+            <a href="#talk" className="py-2 text-[15px] text-muted hover:text-text">Talk ({comments.length})</a>
             <Link href={`${base}/edit`} className="py-2 text-[15px] text-muted hover:text-text">Edit</Link>
             <Link href={`${base}/history`} className="py-2 text-[15px] text-muted hover:text-text">History</Link>
           </div>
           <div className="lg:hidden"><Infobox page={page} game={game} /></div>
           <Markdown>{body}</Markdown>
+          <MyVotes ids={{ theory: theories.map(t => t.id), comment: commentIds(comments) }}>
+            <div className="mt-4 flex flex-col gap-8">
+              <Theories theories={theories} pageId={page.id} path={base} />
+              <Talk comments={comments} pageId={page.id} path={base} />
+            </div>
+          </MyVotes>
         </article>
         <div className="hidden flex-col gap-8 lg:flex">
           <Infobox page={page} game={game} />
