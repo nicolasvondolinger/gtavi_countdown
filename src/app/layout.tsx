@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { MobileBar } from '@/components/layout/MobileBar';
 import { TopAd } from '@/components/layout/TopAd';
+import { SITE_NAME, SITE_URL } from '@/lib/site';
 import './globals.css';
 
 const barlowCondensed = Barlow_Condensed({ subsets: ['latin'], weight: ['600', '700'], variable: '--font-barlow-condensed' });
@@ -15,7 +16,10 @@ const archivo = Archivo({ subsets: ['latin'], variable: '--font-archivo' });
 const jetbrains = JetBrains_Mono({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-jetbrains' });
 
 export const metadata: Metadata = {
-  title: { default: 'GTA Wiki', template: '%s | GTA Wiki' },
+  metadataBase: new URL(SITE_URL),
+  title: { default: SITE_NAME, template: `%s | ${SITE_NAME}` },
+  openGraph: { siteName: SITE_NAME, type: 'website', images: ['/media/bg/hero.webp'] },
+  twitter: { card: 'summary_large_image' },
   description: 'The community-verified encyclopedia of the Grand Theft Auto series.',
 };
 
@@ -23,10 +27,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${barlowCondensed.variable} ${barlow.variable} ${archivo.variable} ${jetbrains.variable}`}>
       <body className="flex min-h-dvh flex-col">
+        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-bg focus:p-3">Skip to content</a>
         <TopAd />
         <Header />
         <MobileBar account={<MobileAccount />} />
-        <main className="flex-1">{children}</main>
+        <main id="main" className="flex-1">{children}</main>
         <Footer />
         <BottomNav />
       </body>

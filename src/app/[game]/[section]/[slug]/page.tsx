@@ -8,6 +8,7 @@ import { Theories } from '@/components/article/Theories';
 import { AdSlot } from '@/components/ui/AdSlot';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
+import { JsonLd } from '@/components/ui/JsonLd';
 import { Meta } from '@/components/ui/Meta';
 import { Status } from '@/components/ui/Status';
 import { Tag } from '@/components/ui/Tag';
@@ -32,7 +33,9 @@ async function load({ params }: Props) {
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const row = await load(props);
-  return row ? { title: `${row.page.title} (${row.game.shortName})`, description: row.page.summary } : {};
+  if (!row) return {};
+  const title = `${row.page.title} (${row.game.shortName})`;
+  return { title, description: row.page.summary, openGraph: { title, description: row.page.summary, type: 'article', ...(row.page.image ? { images: [`/media/${row.page.image}`] } : {}) } };
 }
 
 export default async function ArticlePage(props: Props) {
@@ -56,6 +59,7 @@ export default async function ArticlePage(props: Props) {
           <a href="#talk" className="text-sm text-muted hover:text-text">Talk</a>
         </nav>
         <article className="flex min-w-0 flex-col gap-4 lg:gap-5">
+          <JsonLd data={{ '@context': 'https://schema.org', '@type': 'Article', headline: page.title, description: page.summary, dateModified: revision?.createdAt.toISOString(), ...(page.image ? { image: `/media/${page.image}` } : {}), about: game.name }} />
           <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Games', href: '/games' }, { label: game.shortName, href: `/${game.slug}` }, { label, href: `/${game.slug}/${page.section}` }, { label: page.title }]} />
           <h1 className="text-[41px] lg:text-[72px]">{page.title}</h1>
           <Meta>
