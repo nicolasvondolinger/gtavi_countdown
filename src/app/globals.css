@@ -39,3 +39,41 @@
     }
   }
 }
+
+@layer components {
+  .prose-wiki {
+    font-family: var(--font-read);
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--color-body);
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+  }
+  .prose-wiki h2,
+  .prose-wiki h3 {
+    color: var(--color-text);
+    font-size: 26px;
+    margin-top: 0.5em;
+  }
+  .prose-wiki a {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+  .prose-wiki ul,
+  .prose-wiki ol {
+    padding-left: 1.25em;
+    list-style: revert;
+  }
+  .prose-wiki table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .prose-wiki th,
+  .prose-wiki td {
+    border-top: 1px solid var(--color-line);
+    padding: 10px 16px 10px 0;
+    text-align: left;
+  }
+}

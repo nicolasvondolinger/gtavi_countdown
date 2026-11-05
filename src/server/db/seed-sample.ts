@@ -101,7 +101,8 @@ async function main() {
       { gameId: gta6, layer: 'mission', title: 'First mission start', description: 'Hidden until launch.', x: 0.8, y: 0.7, visibleFrom: new Date('2026-11-19T00:00:00Z') },
     ]);
   }
-  await db.update(s.pages).set({ views: 1200 }).where(eq(s.pages.id, lucia.id));
+  const VIEWS: [string, number][] = [['lucia', 1200], ['cheat-codes', 980], ['release-date-and-editions', 742], ['carl-johnson', 511], ['los-santos', 305]];
+  for (const [slug, views] of VIEWS) await db.update(s.pages).set({ views }).where(eq(s.pages.slug, slug));
   console.log('seeded sample data');
   await sql.end();
 }
