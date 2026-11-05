@@ -4,6 +4,7 @@ import { nextCookies } from 'better-auth/next-js';
 import { sql } from 'drizzle-orm';
 import { USERNAME } from '@/lib/account';
 import { db, schema } from '@/server/db';
+import { emailEnabled, sendEmail } from '@/server/email';
 
 const env = process.env;
 
@@ -36,9 +37,23 @@ export const auth = betterAuth({
     provider: 'pg',
     schema: { user: schema.user, session: schema.session, account: schema.account, verification: schema.verificationToken },
   }),
-  emailAndPassword: { enabled: true, minPasswordLength: 12, autoSignIn: true },
+  emailAndPassword: {
+    enabled: true,
+    minPasswordLength: 12,
+    autoSignIn: true,
+    sendResetPassword: async ({ user, url }) => {
+      await sendEmail({ to: user.email, subject: 'Reset your GTA Wiki password', text: `Use this link to set a new password:\n\n${url}\n\nIf you did not ask for this, ignore this email.` });
+    },
+  },
+  emailVerification: {
+    sendOnSignUp: emailEnabled(),
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendEmail({ to: user.email, subject: 'Verify your GTA Wiki email', text: `Confirm your email address:\n\n${url}` });
+    },
+  },
   socialProviders: { ...(google && { google }), ...(discord && { discord }), ...(apple && { apple }) },
-  rateLimit: { window: 60, max: 60, customRules: { '/sign-in/email': { window: 60, max: 5 }, '/sign-up/email': { window: 60, max: 5 } } },
+  rateLimit: { window: 60, max: 60, customRules: { '/sign-in/email': { window: 60, max: 5 }, '/sign-up/email': { window: 60, max: 5 }, '/request-password-reset': { window: 60, max: 3 } } },
   databaseHooks: {
     user: {
       create: {

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { Button } from '@/components/ui/Button';
@@ -26,7 +27,7 @@ export function SignInForm({ next }: { next: string }) {
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
       <Field label="Email" name="email" type="email" autoComplete="email" required />
-      <Field label="Password" name="password" type="password" autoComplete="current-password" required error={error} />
+      <Field label="Password" name="password" type="password" autoComplete="current-password" required error={error} aside={<Link href="/forgot-password" className="text-[13px] font-semibold text-accent">Forgot password?</Link>} />
       <Button disabled={busy} className="py-3">Sign in</Button>
     </form>
   );

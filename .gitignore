@@ -45,5 +45,6 @@ next-env.d.ts
 *.zip
 
 # tests
+/.outbox/
 /test-results/
 /playwright-report/
