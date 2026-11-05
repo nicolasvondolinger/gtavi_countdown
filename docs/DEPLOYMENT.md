@@ -18,6 +18,7 @@ The old countdown is still served by GitHub Pages from its last deploy. Pushing 
 | Privacy Policy and Terms | Drafts, need legal review |
 | Rights to official artwork | Confirm before publishing |
 | Sample data | Run only `db:seed` in production, never `db:seed:sample` |
+| First reviewers | A new site has nobody with 500 rep, so edits cannot be reviewed. Set `role` to `reviewer` or `moderator` in `profiles` for at least five trusted people |
 
 ## Option A: VPS with Docker (Coolify or plain Compose)
 

@@ -70,7 +70,7 @@ export default async function ArticlePage(props: Props) {
           </Meta>
           <div className="flex gap-6 border-b border-line">
             <span aria-current="page" className="border-b-2 border-accent py-2 text-[15px] font-semibold">Article</span>
-            <a href="#talk" className="py-2 text-[15px] text-muted hover:text-text">Talk ({comments.length})</a>
+            <a href="#talk" className="py-2 text-[15px] text-muted hover:text-text">Talk ({commentIds(comments).length})</a>
             <Link href={`${base}/edit`} className="py-2 text-[15px] text-muted hover:text-text">Edit</Link>
             <Link href={`${base}/history`} className="py-2 text-[15px] text-muted hover:text-text">History</Link>
           </div>
