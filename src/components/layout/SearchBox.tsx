@@ -69,7 +69,7 @@ export function SearchBox({ wide, initial = '' }: { wide?: boolean; initial?: st
       onBlur={e => {
         if (!box.current?.contains(e.relatedTarget)) setOpen(false);
       }}
-      className={`relative ${wide ? 'w-full' : 'w-[300px]'}`}
+      className={`relative ${wide ? 'w-full' : 'w-[300px] min-w-[150px] shrink'}`}
     >
       <div className="flex items-center gap-2 rounded-control border border-line bg-surface px-2.5 py-2 focus-within:border-accent">
         <Icon name="search" className="shrink-0 text-muted" />

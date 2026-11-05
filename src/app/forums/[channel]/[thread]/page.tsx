@@ -3,6 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CommentNode } from '@/components/discussion/CommentNode';
+import { ReportButton } from '@/components/discussion/ReportButton';
+import { ModeratorBar } from '@/components/moderation/ModeratorBar';
 import { ReplyForm } from '@/components/forum/ReplyForm';
 import { SpoilerImage, SpoilerScope } from '@/components/forum/Spoilers';
 import { AdSlot } from '@/components/ui/AdSlot';
@@ -55,6 +57,7 @@ export default async function ThreadPage({ params }: Props) {
                     <span>{timeAgo(thread.createdAt)}</span>
                     {tags.map(t => <Tag key={t} href={`/forums/${channel.slug}?tag=${t}`}>{t}</Tag>)}
                   </div>
+                  <ModeratorBar threadId={thread.id} pinned={thread.pinned} path={path} />
                   {isLeak && <Status kind="leak" source="Nothing in this thread is confirmed by Rockstar" />}
                   <p className="font-read text-base/[1.6] whitespace-pre-wrap text-body lg:text-[17px]">{thread.body}</p>
                   {thread.image && <SpoilerImage src={`/media/${thread.image}`} spoiler={thread.spoiler} sizes="(min-width: 1024px) 50vw, 100vw" label="Spoiler: tagged image" className="aspect-[13/5]" />}
@@ -65,7 +68,7 @@ export default async function ThreadPage({ params }: Props) {
               <ReplyForm threadId={thread.id} path={path} />
               <h2 className="font-ui text-[17px] font-semibold">{thread.replyCount.toLocaleString('en')} replies</h2>
               <div className="flex flex-col gap-5">
-                {replies.map(p => <CommentNode key={p.id} node={p} kind="post" />)}
+                {replies.map(p => <CommentNode key={p.id} node={p} kind="post" actions={node => <ReportButton kind="post" id={node.id} path={path} />} />)}
               </div>
             </div>
             <aside className="flex flex-col gap-7">

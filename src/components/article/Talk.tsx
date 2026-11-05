@@ -1,6 +1,6 @@
 import { CommentNode } from '@/components/discussion/CommentNode';
-import { reportComment } from '@/server/wiki/community-actions';
 import type { Discussion } from '@/server/wiki/community';
+import { ReportButton } from '@/components/discussion/ReportButton';
 import { CommentForm } from './CommentForm';
 
 export function Talk({ comments, pageId, path }: { comments: Discussion[]; pageId: number; path: string }) {
@@ -19,11 +19,7 @@ export function Talk({ comments, pageId, path }: { comments: Discussion[]; pageI
                 <summary className="cursor-pointer text-[13px] font-semibold text-muted">Reply</summary>
                 <div className="mt-2 w-[min(520px,70vw)]"><CommentForm pageId={pageId} path={path} parentId={node.id} /></div>
               </details>
-              <form action={reportComment}>
-                <input type="hidden" name="id" value={node.id} />
-                <input type="hidden" name="path" value={path} />
-                <button className="text-[13px] text-dim hover:text-text">Report</button>
-              </form>
+              <ReportButton kind="comment" id={node.id} path={path} />
             </>
           )}
         />

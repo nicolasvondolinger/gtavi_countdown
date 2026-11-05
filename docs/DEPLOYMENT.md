@@ -13,12 +13,12 @@ The old countdown is still served by GitHub Pages from its last deploy. Pushing 
 | Hosting and domain | Needs an account and a decision |
 | Production PostgreSQL with backups | Needs an account |
 | Google, Apple, Discord OAuth apps | Needs developer accounts; each provider stays hidden until its credentials are set |
-| Email sending (password reset, verification) | Not built; needs a provider such as Resend |
+| Email sending (password reset, verification) | Built for Resend; set `RESEND_API_KEY` and `EMAIL_FROM`. Without a key the reset page says it is unavailable |
 | Ad network | Slots are placeholders |
 | Privacy Policy and Terms | Drafts, need legal review |
 | Rights to official artwork | Confirm before publishing |
 | Sample data | Run only `db:seed` in production, never `db:seed:sample` |
-| First reviewers | A new site has nobody with 500 rep, so edits cannot be reviewed. Set `role` to `reviewer` or `moderator` in `profiles` for at least five trusted people |
+| First moderator and reviewers | A new site has nobody with 500 rep, so edits cannot be reviewed. Create your account, run `npm run admin:role -- <username> moderator`, then name at least five reviewers at `/moderation` |
 
 ## Option A: VPS with Docker (Coolify or plain Compose)
 
@@ -43,6 +43,7 @@ Import the repo in Vercel, set the same variables, and use Neon for Postgres. Ru
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Optional |
 | `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET` | Optional |
 | `APPLE_CLIENT_ID`, `APPLE_CLIENT_SECRET` | Optional |
+| `RESEND_API_KEY`, `EMAIL_FROM` | Needed for password reset and email verification |
 
 OAuth redirect URL for each provider: `https://your.domain/api/auth/callback/<provider>`.
 

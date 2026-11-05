@@ -15,7 +15,8 @@
     "db:seed": "tsx src/server/db/seed.ts",
     "db:seed:sample": "tsx src/server/db/seed-sample.ts",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "admin:role": "tsx src/server/db/set-role.ts"
   },
   "dependencies": {
     "better-auth": "^1.7.17",

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-export type ViewerSummary = { username: string; avatar: string; rep: number; level: number; onboarded: boolean };
+export type ViewerSummary = { username: string; avatar: string; rep: number; role: string; level: number; onboarded: boolean; unread: number; reviewer: boolean; pending: number };
 
 // Pages stay cacheable, so who is signed in is read in the browser.
 export function useViewer() {

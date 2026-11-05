@@ -2,9 +2,10 @@ import { and, asc, desc, eq, sql } from 'drizzle-orm';
 import { REP } from '@/lib/account';
 import { isOfficialSource } from '@/lib/sources';
 import { db, schema } from '@/server/db';
+import { notify } from '@/server/notifications';
 import { awardRep } from '@/server/reputation';
 
-const { revisions, revisionVotes, pages, profiles } = schema;
+const { revisions, revisionVotes, pages, profiles, games } = schema;
 
 export const REVIEWERS_REQUIRED = 5;
 
@@ -70,9 +71,14 @@ export async function castReviewVote(revisionId: number, userId: string, vote: '
       if (state === 'accepted') await awardRep(tx, revision.authorId, 'edit_accepted', REP.editAccepted, `revision:${revisionId}`);
       else await awardRep(tx, revision.authorId, 'edit_reverted', REP.editReverted, `revision:${revisionId}`);
     }
+    const [game] = await tx.select({ slug: games.slug }).from(games).where(eq(games.id, page!.gameId));
+    const outcome = state === 'accepted' ? 'was accepted' : stale ? 'closed because the page changed' : 'was reverted';
+    await notify(tx, { userId: revision.authorId, title: `Your edit to ${page!.title} ${outcome}`, href: `/${game!.slug}/${page!.section}/${page!.slug}/history?rev=${revisionId}` });
     return { state, votes: votes.length, stale };
   });
 }
+
+export const pendingCount = () => db.$count(revisions, eq(revisions.state, 'pending'));
 
 export function getHistory(pageId: number) {
   return db

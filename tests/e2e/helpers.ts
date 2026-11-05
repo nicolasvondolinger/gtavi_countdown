@@ -17,6 +17,12 @@ export async function signUp(page: Page, info: TestInfo, next = '/') {
   return id;
 }
 
+export async function setRole(username: string, role: string) {
+  const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+  await sql`update profiles set role = ${role}::role where username = ${username}`;
+  await sql.end();
+}
+
 export async function makeReviewer(username: string) {
   const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
   await sql`update profiles set rep = 1000 where username = ${username}`;

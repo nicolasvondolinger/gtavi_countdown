@@ -144,6 +144,7 @@ export const pages = pgTable(
     source: text('source'),
     image: text('image'),
     infobox: jsonb('infobox').$type<{ label: string; value: string; status?: 'official' | 'leak' | 'theory' }[]>().notNull().default([]),
+    gallery: jsonb('gallery').$type<string[]>().notNull().default([]),
     currentRevisionId: integer('current_revision_id').references((): AnyPgColumn => revisions.id),
     views: integer('views').notNull().default(0),
     search: tsvector('search').generatedAlwaysAs(
@@ -211,6 +212,42 @@ export const reputationEvents = pgTable(
   t => [uniqueIndex('reputation_once_idx').on(t.kind, t.ref), index('reputation_user_idx').on(t.userId)],
 );
 
+export const notifications = pgTable(
+  'notifications',
+  {
+    id: serial('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    title: text('title').notNull(),
+    href: text('href').notNull(),
+    readAt: timestamp('read_at', { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  t => [index('notifications_user_idx').on(t.userId, t.createdAt)],
+);
+
+export const contentReports = pgTable(
+  'content_reports',
+  {
+    kind: text('kind').notNull(),
+    targetId: integer('target_id').notNull(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    createdAt: createdAt(),
+  },
+  t => [primaryKey({ columns: [t.kind, t.targetId, t.userId] })],
+);
+
+export const moderationLog = pgTable('moderation_log', {
+  id: serial('id').primaryKey(),
+  moderatorId: text('moderator_id').references(() => user.id, { onDelete: 'set null' }),
+  action: text('action').notNull(),
+  target: text('target').notNull(),
+  createdAt: createdAt(),
+});
+
 export const theories = pgTable(
   'theories',
   {
@@ -255,6 +292,7 @@ export const comments = pgTable(
     body: text('body').notNull(),
     score: integer('score').notNull().default(0),
     reports: integer('reports').notNull().default(0),
+    removed: boolean('removed').notNull().default(false),
     createdAt: createdAt(),
   },
   t => [index('comments_page_idx').on(t.pageId)],
@@ -353,6 +391,8 @@ export const posts = pgTable(
     body: text('body').notNull(),
     spoiler: boolean('spoiler').notNull().default(false),
     score: integer('score').notNull().default(0),
+    reports: integer('reports').notNull().default(0),
+    removed: boolean('removed').notNull().default(false),
     createdAt: createdAt(),
   },
   t => [index('posts_thread_idx').on(t.threadId)],

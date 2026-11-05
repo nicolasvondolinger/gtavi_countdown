@@ -17,6 +17,9 @@ const ROUTES: [string, string][] = [
   ['/forums/modding', 'Modding'],
   ['/signin', 'Sign in'],
   ['/signup', 'Create account'],
+  ['/changes', 'Recent changes'],
+  ['/forgot-password', 'Reset your password'],
+  ['/about', 'About GTA Wiki'],
 ];
 
 for (const [path, heading] of ROUTES) {
@@ -36,3 +39,14 @@ test('the map canvas has room and markers can be opened', async ({ page }) => {
   await page.getByRole('button', { name: 'Vice City' }).click();
   await expect(page.getByRole('link', { name: 'Open page' }).first()).toBeVisible();
 });
+
+for (const width of [768, 1024, 1280]) {
+  test(`nothing overflows at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    for (const [path] of ROUTES) {
+      await page.goto(path);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      expect(overflow, path).toBeLessThanOrEqual(0);
+    }
+  });
+}

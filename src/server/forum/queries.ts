@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, inArray, sql, type SQL } from 'drizzle-orm';
 import { db, schema } from '@/server/db';
-import { nest } from '@/server/wiki/community';
+import { REMOVED, nest } from '@/server/wiki/community';
 
 const { channels, threads, tags, threadTags, profiles, posts, threadPages, pages, games } = schema;
 
@@ -39,6 +39,18 @@ export async function getThreads(channelId: number, { sort = 'hot', tag, q, limi
   return rows.map(r => ({ ...r, tags: tagRows.filter(t => t.threadId === r.id).map(t => t.slug) }));
 }
 
+// Threads that mention a game by name, matched on whole words so GTA V does not match GTA VI.
+export function getThreadsAbout(names: string[], limit = 3) {
+  const pattern = names.map(n => `\\m${n.replace(/[^\w ]/g, '')}\\M`).join('|');
+  return db
+    .select({ title: threads.title, slug: threads.slug, channel: channels.slug })
+    .from(threads)
+    .innerJoin(channels, eq(threads.channelId, channels.id))
+    .where(sql`(${threads.title} || ' ' || ${threads.body}) ~* ${pattern} OR ${channels.name} ~* ${pattern}`)
+    .orderBy(desc(threads.score))
+    .limit(limit);
+}
+
 export async function getThread(channelSlug: string, slug: string) {
   const [row] = await db
     .select({ thread: threads, channel: channels, author: profiles.username, avatar: profiles.avatar, role: profiles.role })
@@ -51,7 +63,8 @@ export async function getThread(channelSlug: string, slug: string) {
   const [threadTagRows, related, replies] = await Promise.all([
     db.select({ slug: tags.slug }).from(threadTags).innerJoin(tags, eq(threadTags.tagId, tags.id)).where(eq(threadTags.threadId, row.thread.id)),
     db.select({ title: pages.title, image: pages.image, section: pages.section, slug: pages.slug, gameSlug: games.slug }).from(threadPages).innerJoin(pages, eq(threadPages.pageId, pages.id)).innerJoin(games, eq(pages.gameId, games.id)).where(eq(threadPages.threadId, row.thread.id)),
-    db.select({ id: posts.id, parentId: posts.parentId, body: posts.body, spoiler: posts.spoiler, score: posts.score, createdAt: posts.createdAt, author: profiles.username, avatar: profiles.avatar, role: profiles.role }).from(posts).leftJoin(profiles, eq(posts.authorId, profiles.userId)).where(eq(posts.threadId, row.thread.id)).orderBy(desc(posts.score), asc(posts.createdAt)),
+    db.select({ id: posts.id, parentId: posts.parentId, body: posts.body, removed: posts.removed, spoiler: posts.spoiler, score: posts.score, createdAt: posts.createdAt, author: profiles.username, avatar: profiles.avatar, role: profiles.role }).from(posts).leftJoin(profiles, eq(posts.authorId, profiles.userId)).where(eq(posts.threadId, row.thread.id)).orderBy(desc(posts.score), asc(posts.createdAt)),
   ]);
-  return { ...row, tags: threadTagRows.map(t => t.slug), related, replies: nest(replies) };
+  const visible = replies.map(({ removed, ...p }) => (removed ? { ...p, body: REMOVED, author: null, avatar: null, role: null, spoiler: false } : p));
+  return { ...row, tags: threadTagRows.map(t => t.slug), related, replies: nest(visible) };
 }

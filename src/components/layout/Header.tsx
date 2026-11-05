@@ -6,7 +6,7 @@ import { Wordmark } from './Wordmark';
 export function Header() {
   return (
     <header className="hidden border-b border-line bg-bg lg:block">
-      <div className="mx-auto flex max-w-[1440px] items-center gap-7 px-8 py-3.5 xl:px-20">
+      <div className="mx-auto flex max-w-[1440px] items-center gap-5 px-8 py-3.5 xl:gap-7 xl:px-20">
         <Wordmark />
         <NavLinks />
         <div className="flex-1" />

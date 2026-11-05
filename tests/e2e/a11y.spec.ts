@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-const PAGES = ['/', '/games', '/gta-5', '/gta-6/characters/lucia', '/gta-6/characters/lucia/history', '/search?q=lucia', '/gta-6/map', '/database/vehicles/compare', '/database/builds/new', '/news', '/forums', '/forums/gta-vi-speculation/map-leak-megathread', '/signin', '/signup'];
+const PAGES = ['/', '/games', '/gta-5', '/gta-6/characters/lucia', '/gta-6/characters/lucia/history', '/search?q=lucia', '/gta-6/map', '/database/vehicles/compare', '/database/builds/new', '/news', '/forums', '/forums/gta-vi-speculation/map-leak-megathread', '/signin', '/signup', '/changes', '/forgot-password'];
 
 for (const path of PAGES) {
   test(`${path} has no accessibility violations`, async ({ page }) => {
