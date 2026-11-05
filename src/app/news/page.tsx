@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ModeratorNewsLink } from '@/components/news/ModeratorNewsLink';
 import { AdSlot } from '@/components/ui/AdSlot';
 import { Container } from '@/components/ui/Container';
 import { Icon } from '@/components/ui/Icon';
@@ -33,7 +34,10 @@ export default async function NewsPage({ searchParams }: { searchParams: Promise
   return (
     <Container className="mt-6 mb-16 grid gap-10 lg:mt-8 lg:mb-20 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-12">
       <div className="flex min-w-0 flex-col gap-4">
-        <h1 className="text-[41px] lg:text-[56px]">News and rumors</h1>
+        <div className="flex items-center justify-between gap-4">
+          <h1 className="text-[41px] lg:text-[56px]">News and rumors</h1>
+          <ModeratorNewsLink href="/news/new" label="New story" />
+        </div>
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:px-0">
           {FILTERS.map(([value, label]) => <span key={label} className="shrink-0"><Tag href={value ? `?status=${value}` : '/news'} active={status === value}>{label}</Tag></span>)}
         </div>

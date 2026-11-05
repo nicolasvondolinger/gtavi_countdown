@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import { ModeratorNewsLink } from '@/components/news/ModeratorNewsLink';
 import { AdSlot } from '@/components/ui/AdSlot';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
@@ -37,6 +38,7 @@ export default async function StoryPage({ params }: Props) {
       <article className="flex max-w-[760px] flex-col gap-4">
         <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'News', href: '/news' }, { label: story.title }]} />
         <h1 className="text-[33px] lg:text-[56px]">{story.title}</h1>
+        <div><ModeratorNewsLink href={`/news/${story.slug}/edit`} label="Edit story" /></div>
         <Meta>
           {game && <Tag>{game}</Tag>}
           {story.status && <Status kind={story.status} source={story.source} />}
