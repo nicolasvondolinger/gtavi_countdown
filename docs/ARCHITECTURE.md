@@ -111,10 +111,11 @@ Better Auth owns its own tables (`user`, `session`, `account`, `verification`). 
 
 ## Edit review
 
-1. An edit citing an official source, or changing nothing factual (marked by reviewers as minor), is `accepted` at once.
+1. An edit citing a link on an allowed official host (`src/lib/sources.ts`) is `accepted` at once. Choosing "official" with any other source is refused, so nobody can skip review.
 2. Anything else is `pending`. The article keeps showing the current accepted revision.
 3. Users with the `reviewer` role or rep at or above the reviewer threshold can vote. Authors cannot vote on their own edit.
-4. After 5 votes, the majority wins. Accepted: the revision becomes current, and a community-sourced claim is marked `leak`. Reverted: the revision closes.
+4. After 5 votes, the majority wins. Accepted: the revision becomes current and, if community-sourced, the article shows an unverified leak marker with that source. Reverted: the revision closes.
+   If the article changed during the review, an accepted edit closes unpaid instead of erasing the newer text.
 5. Reputation: +10 for an accepted edit, -15 for a reverted one. Applied once, in the same transaction that closes the review, enforced by a unique key on `reputation_events (kind, ref)`.
 
 ## Project layout
