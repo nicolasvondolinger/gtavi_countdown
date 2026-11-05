@@ -23,3 +23,17 @@ test('a wrong password shows an error', async ({ page }) => {
   await page.getByRole('button', { name: 'Sign in' }).click();
   await expect(page.getByText('That email and password don’t match.')).toBeVisible();
 });
+
+test('the header follows sign in without a page reload', async ({ page }, info) => {
+  const id = `e2eh${info.project.name[0]}${Date.now().toString(36)}`;
+  await page.goto('/signup');
+  await page.getByLabel('Email', { exact: true }).fill(`${id}@example.invalid`);
+  await page.getByLabel('Username').fill(id);
+  await page.getByLabel('Password').fill('correct-horse-battery');
+  await page.getByLabel(/I agree/).check();
+  await page.getByRole('button', { name: 'Create account' }).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.waitForURL(url => !url.pathname.startsWith('/onboarding'));
+  await expect(page.getByRole('link', { name: 'Sign in' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: info.project.name === 'mobile' ? 'Your profile' : new RegExp(id) })).toBeVisible();
+});

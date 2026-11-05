@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { MobileBar } from '@/components/layout/MobileBar';
 import { TopAd } from '@/components/layout/TopAd';
+import { ViewerProvider } from '@/components/layout/useViewer';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import './globals.css';
 
@@ -28,12 +29,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" className={`${barlowCondensed.variable} ${barlow.variable} ${archivo.variable} ${jetbrains.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-bg focus:p-3">Skip to content</a>
+        <ViewerProvider>
         <TopAd />
         <Header />
         <MobileBar account={<MobileAccount />} />
         <main id="main" className="flex-1">{children}</main>
         <Footer />
         <BottomNav />
+        </ViewerProvider>
       </body>
     </html>
   );

@@ -48,3 +48,6 @@ next-env.d.ts
 /.outbox/
 /test-results/
 /playwright-report/
+
+# source packs from Rockstar; only compressed copies go in public/
+/*.zip
