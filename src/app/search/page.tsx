@@ -38,7 +38,7 @@ export default async function SearchPage({ searchParams }: Props) {
           {TYPES.map(([t, label]) => <Tag key={t} href={href({ type: t })} active={t === type}>{label}</Tag>)}
         </div>
       )}
-      <div className="mt-4 grid gap-10 lg:mt-0 lg:grid-cols-[220px_minmax(0,760px)_minmax(0,1fr)] lg:gap-12">
+      <div className="mt-4 grid gap-10 lg:mt-0 lg:grid-cols-[220px_minmax(0,1fr)_300px] lg:gap-10 xl:gap-12">
         <aside className="hidden flex-col gap-6 lg:flex">
           <div className="flex flex-col gap-1">
             <p className="mb-1 text-[13px] font-semibold text-muted">Type</p>

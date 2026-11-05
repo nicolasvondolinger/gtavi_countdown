@@ -72,7 +72,7 @@ export default async function HistoryPage({ params, searchParams }: Props) {
           <section aria-label="Changes" className="flex flex-col gap-3">
             <h2 className="text-[26px]">Changes in this edit</h2>
             <div className="overflow-hidden rounded-control border border-line py-1.5">
-              {diffLines(bodies.before, bodies.after).filter(p => (p.added || p.removed || p.count! <= 3)).map((part, i) => (
+              {diffLines(bodies.before, bodies.after, { ignoreNewlineAtEof: true }).filter(p => (p.added || p.removed || p.count! <= 3)).map((part, i) => (
                 <pre key={i} className={`px-2.5 py-1 font-data text-[13px]/[1.55] whitespace-pre-wrap ${part.added ? 'bg-added/10' : part.removed ? 'bg-removed/10' : 'text-muted'}`}>
                   <span aria-hidden="true" className={part.added ? 'text-added' : part.removed ? 'text-removed' : 'text-dim'}>{part.added ? '+ ' : part.removed ? '- ' : '  '}</span>
                   <span className="sr-only">{part.added ? 'Added: ' : part.removed ? 'Removed: ' : ''}</span>
