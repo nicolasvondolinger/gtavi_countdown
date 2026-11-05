@@ -9,6 +9,7 @@ import { Wordmark } from './Wordmark';
 
 const LINKS = [
   { label: 'All games', href: '/games' },
+  { label: 'Recent changes', href: '/changes' },
   { label: 'About', href: '/about' },
   { label: 'Privacy', href: '/privacy' },
   { label: 'Terms', href: '/terms' },

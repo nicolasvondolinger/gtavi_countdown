@@ -3,7 +3,7 @@ import { Wordmark } from './Wordmark';
 
 const COLUMNS: { title: string; links: [string, string][] }[] = [
   { title: 'Games', links: [['GTA VI', '/gta-6'], ['GTA V', '/gta-5'], ['GTA Online', '/gta-online'], ['San Andreas', '/gta-san-andreas'], ['All games', '/games']] },
-  { title: 'Community', links: [['Forums', '/forums'], ['News', '/news'], ['Map', '/gta-6/map']] },
+  { title: 'Community', links: [['Forums', '/forums'], ['News', '/news'], ['Recent changes', '/changes']] },
   { title: 'Site', links: [['About', '/about'], ['Privacy', '/privacy'], ['Terms', '/terms']] },
 ];
 

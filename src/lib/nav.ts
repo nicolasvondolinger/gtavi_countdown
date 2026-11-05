@@ -13,6 +13,7 @@ export function activeNav(pathname: string): NavLabel | null {
   if (pathname.startsWith('/forums')) return 'Forums';
   if (pathname.startsWith('/news')) return 'News';
   if (pathname.endsWith('/map')) return 'Map';
+  if (pathname.startsWith('/changes')) return 'Explore Wiki';
   if (pathname === '/' || pathname.startsWith('/games') || pathname.startsWith('/gta') || pathname.startsWith('/search')) return 'Explore Wiki';
   return null;
 }
