@@ -8,6 +8,7 @@ import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { LinkButton, TextLink } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { SECTIONS, SECTION_LABEL } from '@/lib/sections';
+import { getThreadsAbout } from '@/server/forum/queries';
 import { getGame, getGamePages } from '@/server/wiki/queries';
 
 export const revalidate = 300;
@@ -25,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function GameHub({ params }: Props) {
   const game = await getGame((await params).game);
   if (!game) notFound();
-  const pages = await getGamePages(game.id);
+  const [pages, threads] = await Promise.all([getGamePages(game.id), getThreadsAbout([game.shortName, game.name])]);
   const topics = SECTIONS.map(section => ({ section, items: pages.filter(p => p.section === section).slice(0, 4) })).filter(t => t.items.length > 0);
 
   return (
@@ -80,7 +81,18 @@ export default async function GameHub({ params }: Props) {
             </div>
           )}
         </section>
-        <aside className="flex flex-col gap-7"><AdSlot size="300x250" /></aside>
+        <aside className="flex flex-col gap-7">
+          <section aria-label={`${game.shortName} in the forums`}>
+            <h2 className="mb-2.5 text-[26px]">{game.shortName} in the forums</h2>
+            {threads.map(t => (
+              <div key={t.slug} className="border-t border-line py-2.5">
+                <Link href={`/forums/${t.channel}/${t.slug}`} className="text-[15px] font-semibold hover:text-accent">{t.title}</Link>
+              </div>
+            ))}
+            <div className="border-t border-line pt-2.5"><TextLink href={threads[0] ? `/forums/${threads[0].channel}` : '/forums/general'}>{threads.length ? 'More in the forums' : 'Start the conversation'}</TextLink></div>
+          </section>
+          <AdSlot size="300x250" />
+        </aside>
       </Container>
     </>
   );

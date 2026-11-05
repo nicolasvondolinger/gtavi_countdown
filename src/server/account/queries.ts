@@ -42,6 +42,17 @@ export function getUserThreads(userId: string, limit = 20) {
     .limit(limit);
 }
 
+export function getUserTheories(userId: string, limit = 20) {
+  return db
+    .select({ id: theories.id, title: theories.title, score: theories.score, createdAt: theories.createdAt, page: pages.title, section: pages.section, slug: pages.slug, gameSlug: games.slug })
+    .from(theories)
+    .innerJoin(pages, eq(theories.pageId, pages.id))
+    .innerJoin(games, eq(pages.gameId, games.id))
+    .where(eq(theories.authorId, userId))
+    .orderBy(desc(theories.createdAt))
+    .limit(limit);
+}
+
 export function getUserBuilds(userId: string, limit = 20) {
   return db
     .select({ id: builds.id, code: builds.code, name: builds.name, vehicle: vehicles.name, createdAt: builds.createdAt })

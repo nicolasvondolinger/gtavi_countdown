@@ -25,7 +25,7 @@ const GAMES: [slug: string, name: string, short: string, year: number, universe:
 ];
 
 type Sec = 'characters' | 'vehicles' | 'locations' | 'guides' | 'lore';
-type PageSeed = { game: string; section: Sec; slug: string; title: string; summary: string; body: string; status?: 'official'; source?: string; image?: string; infobox?: { label: string; value: string }[] };
+type PageSeed = { game: string; section: Sec; slug: string; title: string; summary: string; body: string; status?: 'official'; source?: string; image?: string; gallery?: string[]; infobox?: { label: string; value: string }[] };
 const SRC6 = 'Rockstar Games character profiles';
 const char6 = (slug: string, title: string, role: string, img: string, summary: string, body: string): PageSeed => ({
   game: 'gta-6', section: 'characters', slug, title, summary, status: 'official', source: SRC6, image: `characters/${img}.webp`,
@@ -39,7 +39,7 @@ const region = (slug: string, title: string, summary: string, img: string): Page
 const plain = (game: string, section: Sec, slug: string, title: string, summary: string): PageSeed => ({ game, section, slug, title, summary, body: summary });
 
 const PAGES: PageSeed[] = [
-  { ...char6('lucia', 'Lucia Caminos', 'Protagonist', 'lucia', 'Lucia Caminos is one of the two protagonists of Grand Theft Auto VI, alongside Jason Duval. She first appears in Trailer 1, in the Leonida Penitentiary.', 'Rockstar describes Lucia as someone whose father taught her to fight as soon as she could walk. Fighting for her family landed her in the Leonida Penitentiary, and sheer luck got her out.\n\nAfter her release she teams up with Jason, and the pair are pulled into a criminal conspiracy that stretches across the state.\n\n## Appearances\n\n| Where | When |\n| --- | --- |\n| Trailer 1 | 5 December 2023 |\n| Trailer 2 | 6 May 2025 |'), infobox: [{ label: 'Status', value: 'Playable' }, { label: 'Home', value: 'Leonida' }, { label: 'First seen', value: 'Trailer 1, 5 Dec 2023' }, { label: 'Associates', value: 'Jason Duval' }, { label: 'Voice actor', value: 'Not announced' }] },
+  { ...char6('lucia', 'Lucia Caminos', 'Protagonist', 'lucia', 'Lucia Caminos is one of the two protagonists of Grand Theft Auto VI, alongside Jason Duval. She first appears in Trailer 1, in the Leonida Penitentiary.', 'Rockstar describes Lucia as someone whose father taught her to fight as soon as she could walk. Fighting for her family landed her in the Leonida Penitentiary, and sheer luck got her out.\n\nAfter her release she teams up with Jason, and the pair are pulled into a criminal conspiracy that stretches across the state.\n\n## Appearances\n\n| Where | When |\n| --- | --- |\n| Trailer 1 | 5 December 2023 |\n| Trailer 2 | 6 May 2025 |'), infobox: [{ label: 'Status', value: 'Playable' }, { label: 'Home', value: 'Leonida' }, { label: 'First seen', value: 'Trailer 1, 5 Dec 2023' }, { label: 'Associates', value: 'Jason Duval' }, { label: 'Voice actor', value: 'Not announced' }], gallery: ['characters/feature.webp', 'bg/duo3.webp', 'bg/motel.webp'] },
   char6('jason', 'Jason Duval', 'Protagonist', 'jason', 'Jason Duval is one of the two protagonists of Grand Theft Auto VI, alongside Lucia Caminos.', 'Rockstar describes Jason as someone who wants an easy life while things keep getting harder. He grew up around grifters and crooks, and after a stint in the Army he ended up in the Leonida Keys working for local drug runners.'),
   char6('cal-hampton', 'Cal Hampton', 'Jason’s friend', 'cal', 'Cal Hampton is Jason’s friend and a fellow associate of Brian Heder.', 'Cal is happiest at home, deep in conspiracy theories, and he works alongside Jason for Brian Heder.'),
   char6('boobie-ike', 'Boobie Ike', 'Only Raw Records', 'boobie', 'Boobie Ike is a Vice City local legend with interests in property, a strip club and Only Raw Records.', 'Boobie runs his businesses out of Vice City and co-owns the label Only Raw Records with Dre’Quan Priest.'),
@@ -121,7 +121,7 @@ export async function seedFacts() {
     const [page] = await db
       .insert(pages)
       .values(values)
-      .onConflictDoUpdate({ target: [pages.gameId, pages.section, pages.slug], set: { title: p.title, summary: p.summary, status: p.status ?? null, source: p.source ?? null, image: p.image ?? null, infobox: p.infobox ?? [] } })
+      .onConflictDoUpdate({ target: [pages.gameId, pages.section, pages.slug], set: { title: p.title, summary: p.summary, status: p.status ?? null, source: p.source ?? null, image: p.image ?? null, infobox: p.infobox ?? [], gallery: p.gallery ?? [] } })
       .returning({ id: pages.id, current: pages.currentRevisionId });
     if (!page!.current) {
       const [rev] = await db.insert(revisions).values({ pageId: page!.id, body, summary: 'Page created', sourceKind: p.status ? 'official' : 'none', source: p.source, state: 'accepted', sizeDelta: body.length, closedAt: new Date() }).returning({ id: revisions.id });

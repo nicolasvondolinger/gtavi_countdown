@@ -5,6 +5,7 @@ import { StatBars } from '@/components/database/StatBars';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { LinkButton } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
+import { CopyLink } from '@/components/ui/CopyLink';
 import { Tag } from '@/components/ui/Tag';
 import { BASE_STATS, STAT_LABEL, statGains } from '@/lib/compare';
 import { getBuild, getModCatalog } from '@/server/database/queries';
@@ -47,7 +48,10 @@ export default async function BuildPage({ params }: Props) {
             ))}
           </dl>
           <p className="flex items-baseline justify-between border-t border-line pt-3"><span className="text-[17px] font-semibold">Total</span><span className="font-data text-[26px] font-bold">GTA$ {total.toLocaleString('en')}</span></p>
-          <LinkButton href={`/database/builds/new?vehicle=${row.game.slug}.${row.vehicle.slug}`} kind="secondary">Make your own</LinkButton>
+          <div className="grid grid-cols-2 gap-2.5">
+            <CopyLink />
+            <LinkButton href={`/database/builds/new?vehicle=${row.game.slug}.${row.vehicle.slug}`} kind="secondary">Make your own</LinkButton>
+          </div>
         </div>
       </div>
     </Container>

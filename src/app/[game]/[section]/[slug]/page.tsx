@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Gallery } from '@/components/article/Gallery';
 import { Infobox } from '@/components/article/Infobox';
 import { Markdown } from '@/components/article/Markdown';
 import { Talk } from '@/components/article/Talk';
@@ -51,10 +52,11 @@ export default async function ArticlePage(props: Props) {
 
   return (
     <>
-      <Container className="mt-5 mb-16 flex flex-col gap-6 lg:mt-7 lg:mb-20 lg:grid lg:grid-cols-[180px_minmax(0,660px)_minmax(0,1fr)] lg:gap-10 xl:gap-12">
-        <nav aria-label="On this page" className="sticky top-6 hidden flex-col gap-3 self-start pt-[92px] lg:flex">
+      <Container className="mt-5 mb-16 flex flex-col gap-6 lg:mt-7 lg:mb-20 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10 min-[1400px]:grid-cols-[180px_minmax(0,660px)_minmax(0,1fr)] min-[1400px]:gap-12">
+        <nav aria-label="On this page" className="sticky top-6 hidden flex-col gap-3 self-start pt-[92px] min-[1400px]:flex">
           <p className="text-[13px] font-semibold">On this page</p>
           {toc.map(item => <a key={item.id} href={`#${item.id}`} className="text-sm text-muted hover:text-text">{item.label}</a>)}
+          {page.gallery.length > 0 && <a href="#gallery" className="text-sm text-muted hover:text-text">Gallery</a>}
           <a href="#theories" className="text-sm text-muted hover:text-text">Theories</a>
           <a href="#talk" className="text-sm text-muted hover:text-text">Talk</a>
         </nav>
@@ -76,6 +78,7 @@ export default async function ArticlePage(props: Props) {
           </div>
           <div className="lg:hidden"><Infobox page={page} game={game} /></div>
           <Markdown>{body}</Markdown>
+          <Gallery images={page.gallery} title={page.title} />
           <MyVotes ids={{ theory: theories.map(t => t.id), comment: commentIds(comments) }}>
             <div className="mt-4 flex flex-col gap-8">
               <Theories theories={theories} pageId={page.id} path={base} />

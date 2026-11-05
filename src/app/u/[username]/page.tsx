@@ -7,7 +7,7 @@ import { Container } from '@/components/ui/Container';
 import { REP_RULES, levelFor, repForLevel } from '@/lib/account';
 import { timeAgo } from '@/lib/format';
 import { signOut } from '@/server/account/actions';
-import { getProfile, getUserBuilds, getUserEdits, getUserThreads, getUserTotals } from '@/server/account/queries';
+import { getProfile, getUserBuilds, getUserEdits, getUserTheories, getUserThreads, getUserTotals } from '@/server/account/queries';
 import { getViewer } from '@/server/auth/session';
 
 type Props = { params: Promise<{ username: string }>; searchParams: Promise<{ tab?: string }> };
@@ -26,12 +26,13 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const edits = tab === 'edits' ? await getUserEdits(profile.userId) : [];
   const threads = tab === 'threads' ? await getUserThreads(profile.userId) : [];
   const builds = tab === 'builds' ? await getUserBuilds(profile.userId) : [];
+  const theories = tab === 'theories' ? await getUserTheories(profile.userId) : [];
   const level = levelFor(profile.rep);
   const floor = repForLevel(level);
   const ceiling = repForLevel(level + 1);
   const progress = Math.min(100, Math.round(((profile.rep - floor) / (ceiling - floor)) * 100));
   const keptShare = totals.edits ? Math.round((totals.kept / totals.edits) * 100) : null;
-  const tabs = [['edits', 'Wiki edits', totals.edits], ['threads', 'Threads', totals.threads], ['builds', 'Builds', totals.builds]] as const;
+  const tabs = [['edits', 'Wiki edits', totals.edits], ['theories', 'Theories', totals.theories], ['threads', 'Threads', totals.threads], ['builds', 'Builds', totals.builds]] as const;
 
   return (
     <Container className="mt-6 mb-16 flex flex-col gap-6 lg:mt-10 lg:mb-20 lg:gap-8">
@@ -63,6 +64,12 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               <span className={`w-16 text-sm font-semibold ${e.state === 'pending' ? 'text-leak' : 'text-muted'}`}>{STATE_LABEL[e.state]}</span>
             </div>
           ))}
+          {theories.map(t => (
+            <div key={t.id} className="flex flex-col gap-1 border-t border-line py-3">
+              <Link href={`/${t.gameSlug}/${t.section}/${t.slug}#theories`} className="text-[15px] font-semibold hover:text-accent">{t.title}</Link>
+              <p className="text-[13px] text-muted">On {t.page} · {t.score} votes · {timeAgo(t.createdAt)}</p>
+            </div>
+          ))}
           {threads.map(t => (
             <div key={t.id} className="flex flex-col gap-1 border-t border-line py-3">
               <Link href={`/forums/${t.channelSlug}/${t.slug}`} className="text-[15px] font-semibold hover:text-accent">{t.title}</Link>
@@ -75,7 +82,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               <p className="text-[13px] text-muted">{b.vehicle} · {timeAgo(b.createdAt)}</p>
             </div>
           ))}
-          {edits.length + threads.length + builds.length === 0 && <p className="font-read text-[15px] text-muted">Nothing here yet.</p>}
+          {edits.length + theories.length + threads.length + builds.length === 0 && <p className="font-read text-[15px] text-muted">Nothing here yet.</p>}
         </section>
         <aside aria-label="Reputation" className="flex flex-col gap-3.5 self-start rounded-panel border border-line bg-surface p-5">
           <h2 className="font-ui text-[17px] font-semibold">Reputation</h2>

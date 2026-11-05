@@ -5,6 +5,7 @@ import { AddVehicle } from '@/components/database/CompareControls';
 import { ArtSlot } from '@/components/ui/ArtSlot';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
+import { CopyLink } from '@/components/ui/CopyLink';
 import { Icon } from '@/components/ui/Icon';
 import { bestIndex, parseVehicleKeys, type Direction } from '@/lib/compare';
 import { getVehicles, type Vehicle } from '@/server/database/queries';
@@ -38,7 +39,10 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
       <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Database' }, { label: 'Vehicles' }, { label: 'Compare' }]} />
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <h1 className="text-[41px] lg:text-[56px]">Compare vehicles</h1>
-        <LinkButton href="/database/builds/new" kind="secondary">Open the build creator</LinkButton>
+        <div className="flex gap-2.5">
+          <CopyLink label="Copy link to this comparison" />
+          <LinkButton href="/database/builds/new" kind="secondary">Open the build creator</LinkButton>
+        </div>
       </div>
       {picked.some(v => v.specsSample) && (
         <p className="flex items-start gap-2.5 rounded-control border border-leak/30 px-3.5 py-2.5 font-read text-sm text-body">
