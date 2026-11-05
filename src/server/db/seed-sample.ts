@@ -25,7 +25,7 @@ const MODS: Record<string, [string, number, Record<string, number>][]> = {
 };
 const SPECS: [slug: string, speed: number, sixty: number, braking: number, armor: number, price: number | null, where: string][] = [
   ['cheetah-classic', 121, 3.9, 118, 5, 695000, 'Legendary Motorsport'], ['infernus', 124, 3.8, 121, 5, 440000, 'Legendary Motorsport'], ['zentorno', 131, 3.3, 112, 5, 725000, 'Legendary Motorsport'],
-  ['adder', 126, 3.5, 124, 5, 1000000, 'Legendary Motorsport'], ['convertible', 108, 5.2, 131, 3, null, 'Unknown'], ['sport-bike', 134, 3.1, 140, 0, null, 'Unknown'],
+  ['adder', 126, 3.5, 124, 5, 1000000, 'Legendary Motorsport'], ['grotti-cheetah', 108, 5.2, 131, 3, null, 'Unknown'],
 ];
 const hoursAgo = (h: number) => new Date(Date.now() - h * 36e5);
 
@@ -70,10 +70,10 @@ async function main() {
   if (!(await db.$count(s.threads))) {
     const THREADS: [slug: string, title: string, author: string, score: number, replies: number, h: number, tagList: string[], extra?: Partial<typeof s.threads.$inferInsert>, channel?: string][] = [
       ['launch-week-rules', 'Launch week rules: spoiler tags are required from the 12 November preload', 'sample-keys', 0, 41, 60, [], { pinned: true }],
-      ['trailer-2-frame-by-frame', 'Trailer 2 frame by frame: every storefront in Vice City', 'sample-vicevoyager', 4200, 612, 3, ['trailer-2', 'vice-city'], { image: 'world/vice_city.webp' }],
-      ['map-leak-megathread', 'Map leak megathread: grid overlays and scale comparisons', 'sample-keys', 3100, 1402, 5, ['map-leak'], { spoiler: true, image: 'world/grassrivers/01.webp' }],
+      ['trailer-2-frame-by-frame', 'Trailer 2 frame by frame: every storefront in Vice City', 'sample-vicevoyager', 4200, 612, 3, ['trailer-2', 'vice-city'], { image: 'places/vice-city/01.webp' }],
+      ['map-leak-megathread', 'Map leak megathread: grid overlays and scale comparisons', 'sample-keys', 3100, 1402, 5, ['map-leak'], { spoiler: true, image: 'places/grassrivers/01.webp' }],
       ['lucia-father-evidence', 'Is Lucia’s father a returning character? Evidence thread', 'sample-jasonmains', 1800, 488, 9, ['theory', 'lucia']],
-      ['which-edition', 'Which edition are you getting, and why?', 'sample-miami', 402, 231, 11, ['editions'], { image: 'editions/ultimate.webp' }],
+      ['which-edition', 'Which edition are you getting, and why?', 'sample-miami', 402, 231, 11, ['editions'], { image: 'editions/ultimate/01.webp' }],
       ['best-map', 'Is San Andreas still the best map in the series?', 'sample-booker', 418, 96, 20, [], {}, 'general'],
     ];
     for (const [slug, title, authorId, score, replyCount, h, tagList, extra, channel] of THREADS) {
@@ -88,8 +88,8 @@ async function main() {
     }
   }
   await db.insert(s.news).values([
-    { slug: 'sample-grassrivers-grid', gameId: gameId['gta-6'], title: 'Datamined grid puts Grassrivers at roughly twice the size of Blaine County', excerpt: 'Unverified coordinates are circulating on the forums.', body: 'Unverified coordinates are circulating on the forums.', status: 'leak', source: 'Forum thread', image: 'world/grassrivers.webp', publishedAt: hoursAgo(5) },
-    { slug: 'sample-motel-safehouse', gameId: gameId['gta-6'], title: 'The Leonida Keys motel could be the first safehouse', excerpt: 'Top community theories, ranked by votes.', body: 'Top community theories, ranked by votes.', status: 'theory', source: 'Lore desk', image: 'bg/motel.webp', publishedAt: hoursAgo(9) },
+    { slug: 'sample-grassrivers-grid', gameId: gameId['gta-6'], title: 'Datamined grid puts Grassrivers at roughly twice the size of Blaine County', excerpt: 'Unverified coordinates are circulating on the forums.', body: 'Unverified coordinates are circulating on the forums.', status: 'leak', source: 'Forum thread', image: 'places/grassrivers/01.webp', publishedAt: hoursAgo(5) },
+    { slug: 'sample-motel-safehouse', gameId: gameId['gta-6'], title: 'The Leonida Keys motel could be the first safehouse', excerpt: 'Top community theories, ranked by votes.', body: 'Top community theories, ranked by votes.', status: 'theory', source: 'Lore desk', image: 'art/key-motel.webp', publishedAt: hoursAgo(9) },
     { slug: 'sample-spaceship-parts', gameId: gameId['gta-5'], title: 'All 50 spaceship parts in GTA V, with a map', excerpt: 'A refreshed guide with every location.', body: 'A refreshed guide with every location.', source: 'Guide', publishedAt: hoursAgo(26) },
     { slug: 'sample-native-ad', title: 'Native ad slot: headline set like a story', excerpt: 'Sponsored placement.', body: 'Sponsored placement.', source: 'Advertiser name', sponsored: true, publishedAt: hoursAgo(6) },
   ]).onConflictDoNothing();

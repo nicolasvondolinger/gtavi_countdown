@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import type { ReactNode } from 'react';
 
 const base = 'inline-block rounded-image px-2 py-0.5 text-[13px] leading-5';

@@ -1,7 +1,8 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useT } from '@/i18n/t';
+import { Link } from '@/i18n/navigation';
+import { usePathname } from '@/i18n/navigation';
 import { Icon } from '@/components/ui/Icon';
 import type { IconName } from '@/components/ui/icon-paths';
 
@@ -13,15 +14,16 @@ const TABS: { label: string; href: string; icon: IconName; match: (p: string) =>
 ];
 
 export function BottomNav() {
+  const tr = useT();
   const pathname = usePathname();
   return (
-    <nav aria-label="Quick navigation" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-line bg-bg pb-[env(safe-area-inset-bottom)] lg:hidden">
+    <nav aria-label={tr('Quick navigation')} className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-line bg-bg pb-[env(safe-area-inset-bottom)] lg:hidden">
       {TABS.map(t => {
         const on = t.match(pathname);
         return (
           <Link key={t.label} href={t.href} aria-current={on ? 'page' : undefined} className={`flex flex-col items-center gap-0.5 border-t-2 py-1.5 text-xs ${on ? 'border-accent font-semibold text-text' : 'border-transparent text-muted'}`}>
             <Icon name={t.icon} size={24} />
-            {t.label}
+            {tr(t.label)}
           </Link>
         );
       })}

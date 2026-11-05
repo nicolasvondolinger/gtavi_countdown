@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/i18n/navigation';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
 export type ViewerSummary = { username: string; avatar: string; rep: number; role: string; level: number; onboarded: boolean; unread: number; reviewer: boolean; pending: number };

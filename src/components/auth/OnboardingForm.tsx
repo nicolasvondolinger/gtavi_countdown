@@ -1,5 +1,6 @@
 'use client';
 
+import { useT } from '@/i18n/t';
 import { useActionState } from 'react';
 import { Avatar, AVATARS } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
@@ -7,12 +8,13 @@ import { Field } from '@/components/ui/Field';
 import { completeOnboarding } from '@/server/account/actions';
 
 export function OnboardingForm({ username, games, next }: { username: string; games: { id: number; name: string; year: number }[]; next: string }) {
+  const t = useT();
   const [state, action, pending] = useActionState(completeOnboarding, {});
   return (
     <form action={action} className="flex flex-col gap-4">
       <input type="hidden" name="next" value={next} />
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-sm font-semibold text-soft">Avatar</legend>
+        <legend className="mb-2 text-sm font-semibold text-soft">{t('Avatar')}</legend>
         <div className="flex flex-wrap gap-3.5">
           {AVATARS.map((a, i) => (
             <label key={a} className="relative cursor-pointer">
@@ -24,9 +26,9 @@ export function OnboardingForm({ username, games, next }: { username: string; ga
           ))}
         </div>
       </fieldset>
-      <Field label="Gamertag" name="username" defaultValue={username} required error={state.error} autoComplete="username" />
+      <Field label={t('Gamertag')} name="username" defaultValue={username} required error={state.error} autoComplete="username" />
       <fieldset>
-        <legend className="mb-2 text-sm font-semibold text-soft">Favourite GTA</legend>
+        <legend className="mb-2 text-sm font-semibold text-soft">{t('Favourite GTA')}</legend>
         <div className="grid gap-x-4 sm:grid-cols-2">
           {games.map((g, i) => (
             <label key={g.id} className="flex cursor-pointer items-center gap-2.5 border-t border-line py-2.5">
@@ -37,7 +39,7 @@ export function OnboardingForm({ username, games, next }: { username: string; ga
           ))}
         </div>
       </fieldset>
-      <Button disabled={pending}>Continue</Button>
+      <Button disabled={pending}>{t('Continue')}</Button>
     </form>
   );
 }

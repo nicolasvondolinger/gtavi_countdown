@@ -1,12 +1,14 @@
 const units: [Intl.RelativeTimeFormatUnit, number][] = [['year', 31536e6], ['month', 2592e6], ['day', 864e5], ['hour', 36e5], ['minute', 6e4]];
-const relative = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
 
-export function timeAgo(date: Date, now = Date.now()) {
+export const intlLocale = (locale: string) => (locale === 'pt' ? 'pt-BR' : 'en-GB');
+
+export function timeAgo(date: Date, now = Date.now(), locale = 'en') {
+  const relative = new Intl.RelativeTimeFormat(locale === 'pt' ? 'pt-BR' : 'en', { numeric: 'auto' });
   const diff = date.getTime() - now;
   for (const [unit, ms] of units) {
     if (Math.abs(diff) >= ms) return relative.format(Math.round(diff / ms), unit);
   }
-  return 'just now';
+  return locale === 'pt' ? 'agora mesmo' : 'just now';
 }
 
 export function compact(n: number) {
@@ -14,12 +16,16 @@ export function compact(n: number) {
   return String(n);
 }
 
-export function longDate(date: Date) {
-  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
+export function number(n: number, locale: string) {
+  return n.toLocaleString(locale === 'pt' ? 'pt-BR' : 'en');
 }
 
-export function dayMonth(date: Date) {
-  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(date);
+export function longDate(date: Date, locale = 'en') {
+  return new Intl.DateTimeFormat(intlLocale(locale), { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
+}
+
+export function dayMonth(date: Date, locale = 'en') {
+  return new Intl.DateTimeFormat(intlLocale(locale), { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(date);
 }
 
 export function clock(date: Date) {

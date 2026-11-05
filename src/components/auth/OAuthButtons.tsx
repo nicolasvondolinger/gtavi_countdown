@@ -1,5 +1,6 @@
 'use client';
 
+import { useT } from '@/i18n/t';
 import { Icon } from '@/components/ui/Icon';
 import type { IconName } from '@/components/ui/icon-paths';
 import { authClient } from '@/server/auth/client';
@@ -12,6 +13,7 @@ const STYLE: Record<Provider, { label: string; icon: IconName; className: string
 };
 
 export function OAuthButtons({ enabled, next }: { enabled: Record<Provider, boolean>; next: string }) {
+  const t = useT();
   const providers = (Object.keys(STYLE) as Provider[]).filter(p => enabled[p]);
   if (providers.length === 0) return null;
   return (
@@ -20,12 +22,12 @@ export function OAuthButtons({ enabled, next }: { enabled: Record<Provider, bool
         {providers.map(p => (
           <button key={p} type="button" onClick={() => authClient.signIn.social({ provider: p, callbackURL: `/onboarding?next=${encodeURIComponent(next)}` })} className={`flex items-center justify-center gap-2.5 rounded-control px-3.5 py-3 text-[15px] font-semibold ${STYLE[p].className}`}>
             <Icon name={STYLE[p].icon} size={20} />
-            {STYLE[p].label}
+            {t(STYLE[p].label)}
           </button>
         ))}
       </div>
       <div className="flex items-center gap-3 text-[13px] text-muted">
-        <hr className="flex-1 border-line" />or with email<hr className="flex-1 border-line" />
+        <hr className="flex-1 border-line" />{t('or with email')}<hr className="flex-1 border-line" />
       </div>
     </>
   );

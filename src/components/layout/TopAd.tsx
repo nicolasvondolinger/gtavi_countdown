@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/i18n/navigation';
 import { AdStrip } from '@/components/ui/AdSlot';
 
 // The leaderboard sits above the header on reading pages. Tools and account pages stay clear.

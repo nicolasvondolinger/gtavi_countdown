@@ -20,9 +20,9 @@ beforeAll(async () => {
 
 describe('map markers', () => {
   it('hides markers until their date', async () => {
-    const before = await getMarkers(gameId, new Date('2026-11-18T23:59:00Z'));
+    const before = await getMarkers(gameId, 'en', new Date('2026-11-18T23:59:00Z'));
     expect(before.some(m => m.title === 'Hidden mission')).toBe(false);
-    const after = await getMarkers(gameId, new Date('2026-11-19T00:00:01Z'));
+    const after = await getMarkers(gameId, 'en', new Date('2026-11-19T00:00:01Z'));
     expect(after.some(m => m.title === 'Hidden mission')).toBe(true);
   });
   it('links region markers to their article', async () => {

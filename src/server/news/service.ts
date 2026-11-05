@@ -4,7 +4,9 @@ import { db, schema } from '@/server/db';
 
 const { news } = schema;
 
-export type StoryInput = { gameId: number | null; title: string; excerpt: string; body: string; status: 'official' | 'leak' | 'theory' | null; source: string; image: string | null; sponsored: boolean };
+export type StoryInput = {
+  i18n?: { pt?: { title?: string; excerpt?: string; body?: string } };
+  gameId: number | null; title: string; excerpt: string; body: string; status: 'official' | 'leak' | 'theory' | null; source: string; image: string | null; sponsored: boolean };
 
 export async function createStory(input: StoryInput) {
   const base = slugify(input.title).slice(0, 70) || 'story';

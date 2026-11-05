@@ -1,6 +1,7 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { getT } from '@/i18n/server';
+import { revalidateLocales } from '@/server/revalidate';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { requireViewer } from '@/server/auth/session';
@@ -23,20 +24,20 @@ export type ForumState = { error?: string; ok?: boolean };
 
 export async function newThread(_: ForumState, form: FormData): Promise<ForumState> {
   const parsed = thread.safeParse(Object.fromEntries(form));
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message };
+  if (!parsed.success) return { error: (await getT())(parsed.error.issues[0]?.message ?? 'Check the form and try again.') };
   const { channelSlug, ...values } = parsed.data;
   const viewer = await requireViewer(`/forums/${channelSlug}/new`);
   const created = await createThread({ ...values, authorId: viewer.user.id, spoiler: form.get('spoiler') === 'on', tagSlugs: form.getAll('tags').map(String) });
-  revalidatePath(`/forums/${channelSlug}`);
+  revalidateLocales(`/forums/${channelSlug}`);
   redirect(`/forums/${channelSlug}/${created.slug}`);
 }
 
 export async function postReply(_: ForumState, form: FormData): Promise<ForumState> {
   const parsed = reply.safeParse(Object.fromEntries([...form].filter(([, v]) => v !== '')));
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message };
+  if (!parsed.success) return { error: (await getT())(parsed.error.issues[0]?.message ?? 'Check the form and try again.') };
   const { path, ...values } = parsed.data;
   const viewer = await requireViewer(path);
   await createPost({ ...values, authorId: viewer.user.id, spoiler: form.get('spoiler') === 'on' });
-  revalidatePath(path);
+  revalidateLocales(path);
   return { ok: true };
 }

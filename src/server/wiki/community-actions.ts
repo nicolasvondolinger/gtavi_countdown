@@ -1,6 +1,7 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { getT } from '@/i18n/server';
+import { revalidateLocales } from '@/server/revalidate';
 import { z } from 'zod';
 import { requireViewer } from '@/server/auth/session';
 import { db, schema } from '@/server/db';
@@ -24,20 +25,20 @@ const entries = (form: FormData) => Object.fromEntries([...form].filter(([, v]) 
 
 export async function postComment(_: FormState, form: FormData): Promise<FormState> {
   const parsed = comment.safeParse(entries(form));
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message };
+  if (!parsed.success) return { error: (await getT())(parsed.error.issues[0]?.message ?? 'Check the form and try again.') };
   const viewer = await requireViewer(`${parsed.data.path}#talk`);
   const { path } = parsed.data;
   await createComment({ ...parsed.data, authorId: viewer.user.id });
-  revalidatePath(path);
+  revalidateLocales(path);
   return { ok: true };
 }
 
 export async function proposeTheory(_: FormState, form: FormData): Promise<FormState> {
   const parsed = theory.safeParse(entries(form));
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message };
+  if (!parsed.success) return { error: (await getT())(parsed.error.issues[0]?.message ?? 'Check the form and try again.') };
   const { path, ...values } = parsed.data;
   const viewer = await requireViewer(`${path}#theories`);
   await db.insert(schema.theories).values({ ...values, authorId: viewer.user.id });
-  revalidatePath(path);
+  revalidateLocales(path);
   return { ok: true };
 }

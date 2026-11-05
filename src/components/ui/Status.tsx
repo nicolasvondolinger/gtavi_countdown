@@ -1,3 +1,5 @@
+import { useT } from '@/i18n/t';
+
 export type Verification = 'official' | 'leak' | 'theory';
 
 const STATUS: Record<Verification, { label: string; text: string; mark: string }> = {
@@ -7,11 +9,12 @@ const STATUS: Record<Verification, { label: string; text: string; mark: string }
 };
 
 export function Status({ kind, source }: { kind: Verification; source?: string | null }) {
+  const t = useT();
   const s = STATUS[kind];
   return (
     <span className="inline-flex items-center gap-1.5 text-[13px]">
       <span aria-hidden="true" className={`size-2 shrink-0 ${s.mark}`} />
-      <span className={`font-semibold ${s.text}`}>{s.label}</span>
+      <span className={`font-semibold ${s.text}`}>{t(s.label)}</span>
       {source && <span className="text-muted">{source}</span>}
     </span>
   );

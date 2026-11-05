@@ -1,7 +1,8 @@
 'use client';
 
+import { useT } from '@/i18n/t';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { useMemo, useRef, useState, type PointerEvent, type WheelEvent } from 'react';
 import { LinkButton } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
@@ -26,6 +27,7 @@ const LAYERS = [
 const PIN: Record<string, string> = { trailer: 'fill-official', leak: 'fill-leak', theory: 'fill-bg stroke-theory', mission: 'fill-text', collectible: 'fill-text', easter_egg: 'fill-text' };
 
 export function MapView({ markers, otherMaps, title }: { markers: Marker[]; otherMaps: { href: string; label: string }[]; title: string }) {
+  const t = useT();
   const [hidden, setHidden] = useState<Set<string>>(new Set());
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [zoom, setZoom] = useState(1);
@@ -58,7 +60,7 @@ export function MapView({ markers, otherMaps, title }: { markers: Marker[]; othe
       <label key={l.key} className="flex cursor-pointer items-center gap-2.5 py-2">
         <input type="checkbox" checked={!hidden.has(l.key)} onChange={() => toggle(l.key)} className="size-4 accent-accent" />
         <span aria-hidden="true" className={`size-2.5 rounded-image ${l.color}`} />
-        <span className="flex-1 text-[15px]">{l.label}</span>
+        <span className="flex-1 text-[15px]">{t(l.label)}</span>
         <span className="font-data text-xs text-muted">{count(l.key)}</span>
       </label>
     ));
@@ -69,11 +71,11 @@ export function MapView({ markers, otherMaps, title }: { markers: Marker[]; othe
       <div className="flex flex-col gap-2 lg:p-3.5">
         <div className="flex items-start justify-between gap-2">
           <h2 className="font-ui text-[17px] font-semibold">{selected.title}</h2>
-          <button type="button" onClick={() => setSelectedId(null)} aria-label="Close"><Icon name="close" className="text-muted" /></button>
+          <button type="button" onClick={() => setSelectedId(null)} aria-label={t('Close')}><Icon name="close" className="text-muted" /></button>
         </div>
         {selected.status && <Status kind={selected.status} source={selected.source} />}
         {selected.description && <p className="font-read text-sm/normal text-body">{selected.description}</p>}
-        {selected.href && <Link href={selected.href} className="text-sm font-semibold text-accent">Open page</Link>}
+        {selected.href && <Link href={selected.href} className="text-sm font-semibold text-accent">{t('Open page')}</Link>}
       </div>
     </div>
   );
@@ -82,32 +84,32 @@ export function MapView({ markers, otherMaps, title }: { markers: Marker[]; othe
     <div className="flex flex-col-reverse lg:h-[calc(100dvh-69px)] lg:min-h-[640px] lg:flex-row">
       <aside className="flex flex-col gap-1 border-line p-4 lg:w-[320px] lg:shrink-0 lg:overflow-y-auto lg:border-r lg:p-6">
         <h1 className="text-[33px] lg:text-[41px]">{title}</h1>
-        <p className="mb-3 text-sm text-muted">Community-plotted. Not the official map.</p>
+        <p className="mb-3 text-sm text-muted">{t('Community-plotted. Not the official map.')}</p>
         <div className="mb-2 hidden lg:block">
-          <input value={query} onChange={e => setQuery(e.target.value)} aria-label="Find a place or marker" placeholder="Find a place or marker" className="w-full rounded-control border border-line bg-surface px-2.5 py-2 text-sm placeholder:text-dim" />
+          <input value={query} onChange={e => setQuery(e.target.value)} aria-label={t('Find a place or marker')} placeholder={t('Find a place or marker')} className="w-full rounded-control border border-line bg-surface px-2.5 py-2 text-sm placeholder:text-dim" />
         </div>
         {selected && <div className="mb-3 border-b border-line pb-3 lg:hidden">{markerCard}</div>}
-        <p className="text-[13px] font-semibold text-muted">Before launch</p>
+        <p className="text-[13px] font-semibold text-muted">{t('Before launch')}</p>
         {layerList('now')}
-        <p className="mt-3 text-[13px] font-semibold text-muted">From 19 November</p>
+        <p className="mt-3 text-[13px] font-semibold text-muted">{t('From 19 November')}</p>
         {layerList('later')}
-        <p className="font-read text-[13px]/normal text-muted">Mission, collectible and easter-egg markers get added after launch. Until then every marker comes from the trailers, the official stills or the leak thread, and says which.</p>
+        <p className="font-read text-[13px]/normal text-muted">{t('Mission, collectible and easter-egg markers get added after launch. Until then every marker comes from the trailers, the official stills or the leak thread, and says which.')}</p>
         <div className="mt-4 flex flex-col gap-2 lg:mt-auto lg:pt-4">
-          <p className="text-[13px] font-semibold text-muted">Other maps</p>
+          <p className="text-[13px] font-semibold text-muted">{t('Other maps')}</p>
           {otherMaps.map(m => <Link key={m.href} href={m.href} className="text-sm font-semibold text-accent hover:underline">{m.label}</Link>)}
-          <LinkButton href="/forums/lore-and-easter-eggs/new" kind="secondary" className="mt-2">Suggest a marker</LinkButton>
+          <LinkButton href="/forums/lore-and-easter-eggs/new" kind="secondary" className="mt-2">{t('Suggest a marker')}</LinkButton>
         </div>
       </aside>
-      <div onWheel={onWheel} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={() => (drag.current = null)} data-testid="map-canvas" className="relative h-[62dvh] flex-none cursor-grab touch-none overflow-hidden bg-[#0d1a24] select-none active:cursor-grabbing lg:h-auto lg:flex-1">
+      <div onWheel={onWheel} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={() => (drag.current = null)} data-testid="map-canvas" className="relative h-[62dvh] flex-none cursor-grab touch-none overflow-hidden bg-water select-none active:cursor-grabbing lg:h-auto lg:flex-1">
         <div className="absolute inset-0 flex items-center justify-center [container-type:size]">
         {/* The box keeps the map's aspect ratio, so marker percentages line up with the drawing. */}
         <div className="relative origin-center" style={{ width: `min(100cqw, calc(100cqh * ${W} / ${H}))`, aspectRatio: `${W} / ${H}`, transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})` }}>
-          <svg viewBox={`0 0 ${W} ${H}`} className="size-full" role="img" aria-label="Map of Leonida with markers">
-            <path d={LAND} className="fill-[#1a2130] stroke-[#2b3446]" />
-            <ellipse cx="595" cy="458" rx="35" ry="28" className="fill-[#0d1a24]" />
-            <rect x="590" y="520" width="150" height="110" rx="40" className="fill-[#1c2a26] opacity-80" />
-            {KEYS.map(([cx, cy, rx, ry]) => <ellipse key={cx} cx={cx} cy={cy} rx={rx} ry={ry} className="fill-[#1a2130] stroke-[#2b3446]" />)}
-            {REGIONS.map(([name, x, y]) => <text key={name} x={x} y={y} className="fill-[#8c96a8] font-ui text-[13px] font-semibold tracking-[0.18em]">{name}</text>)}
+          <svg viewBox={`0 0 ${W} ${H}`} className="size-full" role="img" aria-label={t('Map of Leonida with markers')}>
+            <path d={LAND} className="fill-land stroke-land-edge" />
+            <ellipse cx="595" cy="458" rx="35" ry="28" className="fill-water" />
+            <rect x="590" y="520" width="150" height="110" rx="40" className="fill-marsh opacity-80" />
+            {KEYS.map(([cx, cy, rx, ry]) => <ellipse key={cx} cx={cx} cy={cy} rx={rx} ry={ry} className="fill-land stroke-land-edge" />)}
+            {REGIONS.map(([name, x, y]) => <text key={name} x={x} y={y} className="fill-muted font-ui text-[13px] font-semibold tracking-[0.18em]">{name}</text>)}
           </svg>
           {visible.map(m => (
             <button key={m.id} type="button" onClick={() => setSelectedId(m.id)} aria-label={m.title} aria-pressed={m.id === selectedId} style={{ left: `${m.x * 100}%`, top: `${m.y * 100}%`, transform: `translate(-50%, -50%) scale(${1 / zoom})` }} className="absolute size-5">
@@ -117,9 +119,9 @@ export function MapView({ markers, otherMaps, title }: { markers: Marker[]; othe
         </div>
         </div>
         <div className="absolute top-4 right-4 flex flex-col rounded-control border border-line bg-bg">
-          <button type="button" onClick={() => zoomBy(1.4)} aria-label="Zoom in" className="p-2"><Icon name="add" size={20} /></button>
+          <button type="button" onClick={() => zoomBy(1.4)} aria-label={t('Zoom in')} className="p-2"><Icon name="add" size={20} /></button>
           <hr className="border-line" />
-          <button type="button" onClick={() => zoomBy(0.7)} aria-label="Zoom out" className="p-2 text-center font-semibold">–</button>
+          <button type="button" onClick={() => zoomBy(0.7)} aria-label={t('Zoom out')} className="p-2 text-center font-semibold">–</button>
         </div>
         {selected && <div className="absolute top-4 left-4 hidden lg:block">{markerCard}</div>}
       </div>

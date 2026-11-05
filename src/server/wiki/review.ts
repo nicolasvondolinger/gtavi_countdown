@@ -11,7 +11,11 @@ export const REVIEWERS_REQUIRED = 5;
 
 export class ReviewError extends Error {}
 
-export type EditInput = { pageId: number; authorId: string; baseRevisionId: number; body: string; summary: string; sourceKind: 'official' | 'community' | 'none'; source?: string | null };
+export type EditInput = { pageId: number; authorId: string; baseRevisionId: number; body: string; summary: string; sourceKind: 'official' | 'community' | 'none'; source?: string | null; locale?: string };
+
+// Each language keeps its own current text. A page not yet translated starts from the English one.
+const currentFor = (page: { currentRevisionId: number | null; currentRevisionPt: number | null }, locale: string) => (locale === 'pt' ? (page.currentRevisionPt ?? page.currentRevisionId) : page.currentRevisionId);
+const pointer = (locale: string, id: number) => (locale === 'pt' ? { currentRevisionPt: id } : { currentRevisionId: id });
 
 export function canReview(profile: { role: string; rep: number }) {
   return profile.role !== 'member' || profile.rep >= REP.reviewerThreshold;
@@ -19,7 +23,7 @@ export function canReview(profile: { role: string; rep: number }) {
 
 // An edit with a verifiable official source goes live; anything else waits for reviewers.
 export async function createRevision(input: EditInput) {
-  const { pageId, authorId, baseRevisionId, body, summary, sourceKind, source } = input;
+  const { pageId, authorId, baseRevisionId, body, summary, sourceKind, source, locale = 'en' } = input;
   const official = sourceKind === 'official' && isOfficialSource(source);
   if (sourceKind === 'official' && !official) throw new ReviewError('An official source must be a link to Rockstar, Take-Two, PlayStation, Xbox or the ESRB.');
   if (sourceKind === 'community' && !source?.trim()) throw new ReviewError('Name the source for this edit.');
@@ -27,7 +31,7 @@ export async function createRevision(input: EditInput) {
   return db.transaction(async tx => {
     const [page] = await tx.select().from(pages).where(eq(pages.id, pageId)).for('update');
     if (!page) throw new ReviewError('This page no longer exists.');
-    if (page.currentRevisionId !== baseRevisionId) throw new ReviewError('The page changed while you were editing. Reload it and apply your edit again.');
+    if (currentFor(page, locale) !== baseRevisionId) throw new ReviewError('The page changed while you were editing. Reload it and apply your edit again.');
     const [base] = await tx.select({ body: revisions.body }).from(revisions).where(eq(revisions.id, baseRevisionId));
     if (base?.body === body) throw new ReviewError('Nothing changed.');
     const pendingByAuthor = await tx.$count(revisions, and(eq(revisions.pageId, pageId), eq(revisions.authorId, authorId), eq(revisions.state, 'pending')));
@@ -35,10 +39,10 @@ export async function createRevision(input: EditInput) {
 
     const [revision] = await tx
       .insert(revisions)
-      .values({ pageId, authorId, parentId: baseRevisionId, body, summary, sourceKind, source: source || null, state: official ? 'accepted' : 'pending', sizeDelta: body.length - (base?.body.length ?? 0), closedAt: official ? new Date() : null })
+      .values({ pageId, authorId, parentId: baseRevisionId, body, summary, sourceKind, source: source || null, state: official ? 'accepted' : 'pending', sizeDelta: body.length - (base?.body.length ?? 0), closedAt: official ? new Date() : null, locale })
       .returning();
     if (official) {
-      await tx.update(pages).set({ currentRevisionId: revision!.id }).where(eq(pages.id, pageId));
+      await tx.update(pages).set(pointer(locale, revision!.id)).where(eq(pages.id, pageId));
       await awardRep(tx, authorId, 'edit_accepted', REP.editAccepted, `revision:${revision!.id}`);
     }
     return revision!;
@@ -63,17 +67,17 @@ export async function castReviewVote(revisionId: number, userId: string, vote: '
     const accepted = keep > votes.length / 2;
     const [page] = await tx.select().from(pages).where(eq(pages.id, revision.pageId)).for('update');
     // The article moved on while this was in review. Accepting would erase those edits, so it closes unpaid.
-    const stale = accepted && page!.currentRevisionId !== revision.parentId;
+    const stale = accepted && currentFor(page!, revision.locale) !== revision.parentId;
     const state = accepted && !stale ? 'accepted' : 'reverted';
     await tx.update(revisions).set({ state, closedAt: new Date() }).where(eq(revisions.id, revisionId));
-    if (state === 'accepted') await tx.update(pages).set({ currentRevisionId: revisionId }).where(eq(pages.id, revision.pageId));
+    if (state === 'accepted') await tx.update(pages).set(pointer(revision.locale, revisionId)).where(eq(pages.id, revision.pageId));
     if (revision.authorId && !stale) {
       if (state === 'accepted') await awardRep(tx, revision.authorId, 'edit_accepted', REP.editAccepted, `revision:${revisionId}`);
       else await awardRep(tx, revision.authorId, 'edit_reverted', REP.editReverted, `revision:${revisionId}`);
     }
     const [game] = await tx.select({ slug: games.slug }).from(games).where(eq(games.id, page!.gameId));
-    const outcome = state === 'accepted' ? 'was accepted' : stale ? 'closed because the page changed' : 'was reverted';
-    await notify(tx, { userId: revision.authorId, title: `Your edit to ${page!.title} ${outcome}`, href: `/${game!.slug}/${page!.section}/${page!.slug}/history?rev=${revisionId}` });
+    const outcome = state === 'accepted' ? 'Your edit to {title} was accepted' : stale ? 'Your edit to {title} closed because the page changed' : 'Your edit to {title} was reverted';
+    await notify(tx, { userId: revision.authorId, title: outcome, vars: { title: page!.title }, href: `/${game!.slug}/${page!.section}/${page!.slug}/history?rev=${revisionId}` });
     return { state, votes: votes.length, stale };
   });
 }
@@ -88,6 +92,7 @@ export function getHistory(pageId: number) {
       summary: revisions.summary,
       sizeDelta: revisions.sizeDelta,
       state: revisions.state,
+      locale: revisions.locale,
       sourceKind: revisions.sourceKind,
       source: revisions.source,
       parentId: revisions.parentId,

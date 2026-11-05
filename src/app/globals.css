@@ -7,6 +7,10 @@
     background: var(--color-bg);
   }
 
+  [data-theme='light'] {
+    color-scheme: light;
+  }
+
   body {
     min-height: 100dvh;
     background: var(--color-bg);

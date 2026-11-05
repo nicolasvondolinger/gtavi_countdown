@@ -1,6 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useT } from '@/i18n/t';
+import { useRouter } from '@/i18n/navigation';
 import { useState, type FormEvent } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
@@ -9,6 +10,7 @@ import { authClient } from '@/server/auth/client';
 import { recordConsent } from '@/server/account/actions';
 
 export function SignUpForm({ next }: { next: string }) {
+  const t = useT();
   const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
@@ -37,19 +39,19 @@ export function SignUpForm({ next }: { next: string }) {
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
-      <Field label="Email" name="email" type="email" autoComplete="email" required error={errors.email} />
-      <Field label="Username" name="username" autoComplete="username" required error={errors.username} />
-      <Field label="Password" name="password" type="password" autoComplete="new-password" required minLength={12} error={errors.password} help="At least 12 characters." />
+      <Field label={t('Email')} name="email" type="email" autoComplete="email" required error={errors.email} />
+      <Field label={t('Username')} name="username" autoComplete="username" required error={errors.username} />
+      <Field label={t('Password')} name="password" type="password" autoComplete="new-password" required minLength={12} error={errors.password} help={t('At least 12 characters.')} />
       <label className="flex items-start gap-2.5 font-read text-sm/snug text-body">
         <input type="checkbox" name="terms" required className="mt-0.5 size-[18px] accent-accent" />
-        I agree to the Terms of Service and the Privacy Policy.
+        {t('I agree to the Terms of Service and the Privacy Policy.')}
       </label>
       <label className="flex items-start gap-2.5 font-read text-sm/snug text-body">
         <input type="checkbox" name="marketing" className="mt-0.5 size-[18px] accent-accent" />
-        Email me when GTA VI launches and once a week after that.
+        {t('Email me when GTA VI launches and once a week after that.')}
       </label>
       {errors.form && <p className="text-[13px] text-removed">{errors.form}</p>}
-      <Button disabled={busy} className="py-3">Create account</Button>
+      <Button disabled={busy} className="py-3">{t('Create account')}</Button>
     </form>
   );
 }

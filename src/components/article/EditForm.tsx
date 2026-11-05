@@ -1,5 +1,6 @@
 'use client';
 
+import { useT } from '@/i18n/t';
 import { useActionState, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Status } from '@/components/ui/Status';
@@ -12,6 +13,7 @@ const KINDS = [
 ] as const;
 
 export function EditForm({ pageId, baseRevisionId, path, body }: { pageId: number; baseRevisionId: number; path: string; body: string }) {
+  const t = useT();
   const [state, action, pending] = useActionState(saveEdit, {});
   const [kind, setKind] = useState<(typeof KINDS)[number][0]>('none');
   return (
@@ -20,31 +22,31 @@ export function EditForm({ pageId, baseRevisionId, path, body }: { pageId: numbe
       <input type="hidden" name="baseRevisionId" value={baseRevisionId} />
       <input type="hidden" name="path" value={path} />
       <label className="flex flex-col gap-1.5">
-        <span className="text-sm font-semibold text-soft">Page text (Markdown)</span>
+        <span className="text-sm font-semibold text-soft">{t('Page text (Markdown)')}</span>
         <textarea name="body" defaultValue={body} required rows={20} className="rounded-control border border-control bg-bg p-3 font-data text-[13px]/[1.6] text-text" />
       </label>
       <label className="flex flex-col gap-1.5">
-        <span className="text-sm font-semibold text-soft">What did you change?</span>
+        <span className="text-sm font-semibold text-soft">{t('What did you change?')}</span>
         <input name="summary" required maxLength={200} className="rounded-control border border-control bg-bg px-3 py-2.5 text-[15px]" />
       </label>
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-1 text-sm font-semibold text-soft">Source</legend>
+        <legend className="mb-1 text-sm font-semibold text-soft">{t('Source')}</legend>
         {KINDS.map(([value, label, help]) => (
           <label key={value} className="flex cursor-pointer items-start gap-2.5 border-t border-line py-2.5">
             <input type="radio" name="sourceKind" value={value} checked={kind === value} onChange={() => setKind(value)} className="mt-1 size-4 accent-accent" />
             <span className="flex flex-col gap-0.5">
-              <span className="text-[15px] font-semibold">{label}</span>
+              <span className="text-[15px] font-semibold">{t(label)}</span>
               <span className="font-read text-[13px] text-muted">{help}</span>
             </span>
           </label>
         ))}
         {kind !== 'none' && (
-          <input name="source" required aria-label="Source" placeholder={kind === 'official' ? 'https://www.rockstargames.com/…' : 'Where this comes from'} className="rounded-control border border-control bg-bg px-3 py-2.5 text-[15px] placeholder:text-dim" />
+          <input name="source" required aria-label={t('Source')} placeholder={kind === 'official' ? 'https://www.rockstargames.com/…' : t('Where this comes from')} className="rounded-control border border-control bg-bg px-3 py-2.5 text-[15px] placeholder:text-dim" />
         )}
       </fieldset>
-      {kind === 'community' && <Status kind="leak" source="if accepted" />}
+      {kind === 'community' && <Status kind="leak" source={t('if accepted')} />}
       {state.error && <p role="alert" className="text-sm text-removed">{state.error}</p>}
-      <div><Button disabled={pending}>{kind === 'official' ? 'Publish edit' : 'Send for review'}</Button></div>
+      <div><Button disabled={pending}>{kind === 'official' ? t('Publish edit') : t('Send for review')}</Button></div>
     </form>
   );
 }

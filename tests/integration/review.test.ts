@@ -28,6 +28,36 @@ beforeAll(async () => {
   }
 });
 
+describe('translations', () => {
+  const official = { sourceKind: 'official', source: 'https://www.rockstargames.com/newswire/article/1', locale: 'pt' };
+  const row = async (id: number) => (await db.select().from(pages).where(eq(pages.id, id)))[0]!;
+
+  it('keeps each language on its own current text', async () => {
+    const ids = await freshPage();
+    const pt = await edit(ids, official);
+    const page = await row(ids.pageId);
+    expect(page.currentRevisionPt).toBe(pt.id);
+    expect(page.currentRevisionId).toBe(ids.baseRevisionId);
+  });
+
+  it('checks a Portuguese edit against the Portuguese text', async () => {
+    const ids = await freshPage();
+    const pt = await edit(ids, official);
+    await expect(edit(ids, { ...official, body: 'stale' })).rejects.toThrow(ReviewError);
+    const next = await edit({ ...ids, baseRevisionId: pt.id }, { ...official, body: 'newer' });
+    expect((await row(ids.pageId)).currentRevisionPt).toBe(next.id);
+  });
+
+  it('publishes a reviewed translation in its own language', async () => {
+    const ids = await freshPage();
+    const pt = await edit(ids, { locale: 'pt' });
+    for (const id of reviewers.slice(0, 5)) await castReviewVote(pt.id, id, 'keep');
+    const page = await row(ids.pageId);
+    expect(page.currentRevisionPt).toBe(pt.id);
+    expect(page.currentRevisionId).toBe(ids.baseRevisionId);
+  });
+});
+
 describe('creating edits', () => {
   it('publishes an edit with a verifiable official source at once', async () => {
     const ids = await freshPage();

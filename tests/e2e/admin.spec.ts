@@ -48,8 +48,8 @@ test('a moderator handles a report, publishes news and sets a role', async ({ br
   await page.goto('/news');
   await page.getByRole('link', { name: 'New story' }).click();
   const title = `A published story ${Date.now()}`;
-  await page.getByLabel('Title').fill(title);
-  await page.getByLabel('Summary').fill('A short summary of it');
+  await page.getByLabel('Title', { exact: true }).fill(title);
+  await page.getByLabel('Summary', { exact: true }).fill('A short summary of it');
   await page.getByLabel('Story', { exact: true }).fill('The full text of the story.');
   await page.getByLabel('Verification').selectOption('official');
   await page.getByLabel('Source').fill('Rockstar Games');

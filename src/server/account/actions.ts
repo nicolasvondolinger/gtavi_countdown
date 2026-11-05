@@ -1,7 +1,8 @@
 'use server';
 
+import { getT } from '@/i18n/server';
 import { eq, sql } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
+import { revalidateLocales } from '@/server/revalidate';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { AVATARS } from '@/components/ui/Avatar';
@@ -30,16 +31,16 @@ export async function completeOnboarding(_: OnboardingState, form: FormData): Pr
   const viewer = await getViewer();
   if (!viewer) redirect('/signin');
   const parsed = onboarding.safeParse({ username: form.get('username'), avatar: form.get('avatar'), favorite: form.get('favorite') || undefined, next: form.get('next') ?? undefined });
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Check the form and try again.' };
+  if (!parsed.success) return { error: (await getT())(parsed.error.issues[0]?.message ?? 'Check the form and try again.') };
   const { username, avatar, favorite, next } = parsed.data;
   const clash = await db.$count(schema.profiles, sql`lower(${schema.profiles.username}) = ${username.toLowerCase()} AND ${schema.profiles.userId} <> ${viewer.user.id}`);
-  if (clash) return { error: 'That username is taken.' };
+  if (clash) return { error: (await getT())('That username is taken.') };
   await db.update(schema.profiles).set({ username, avatar, favoriteGameId: favorite, onboardedAt: new Date() }).where(eq(schema.profiles.userId, viewer.user.id));
   redirect(safeNext(next));
 }
 
 export async function signOut() {
   await auth.api.signOut({ headers: await headers() });
-  revalidatePath('/', 'layout');
+  revalidateLocales('/', 'layout');
   redirect('/');
 }

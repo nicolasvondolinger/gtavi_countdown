@@ -1,6 +1,7 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { useT } from '@/i18n/t';
+import { usePathname, useRouter } from '@/i18n/navigation';
 import { createContext, useContext, useEffect, useMemo, useState, useTransition, type ReactNode } from 'react';
 import { compact } from '@/lib/format';
 import { castVote, loadMyVotes } from '@/server/votes-actions';
@@ -20,6 +21,7 @@ export function MyVotes({ ids, children }: { ids: Partial<Record<VoteKind, numbe
 }
 
 export function Votes({ kind, id, score, row }: { kind: VoteKind; id: number; score: number; row?: boolean }) {
+  const t = useT();
   const router = useRouter();
   const pathname = usePathname();
   const loaded = useContext(MineContext)[`${kind}:${id}`] ?? 0;
@@ -37,11 +39,11 @@ export function Votes({ kind, id, score, row }: { kind: VoteKind; id: number; sc
 
   return (
     <div className={`flex items-center gap-0.5 ${row ? '' : 'flex-col'}`}>
-      <button type="button" disabled={pending} onClick={() => send(1)} aria-label="Vote up" aria-pressed={mine === 1} className={mine === 1 ? 'text-accent' : 'text-muted hover:text-text'}>
+      <button type="button" disabled={pending} onClick={() => send(1)} aria-label={t('Vote up')} aria-pressed={mine === 1} className={mine === 1 ? 'text-accent' : 'text-muted hover:text-text'}>
         <Icon name="arrowUp" />
       </button>
       <span className={`font-data text-[13px] font-bold ${mine === 1 ? 'text-accent' : ''}`}>{compact(shown)}</span>
-      <button type="button" disabled={pending} onClick={() => send(-1)} aria-label="Vote down" aria-pressed={mine === -1} className={mine === -1 ? 'text-accent' : 'text-muted hover:text-text'}>
+      <button type="button" disabled={pending} onClick={() => send(-1)} aria-label={t('Vote down')} aria-pressed={mine === -1} className={mine === -1 ? 'text-accent' : 'text-muted hover:text-text'}>
         <Icon name="arrowDown" />
       </button>
     </div>

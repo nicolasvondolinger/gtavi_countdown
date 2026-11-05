@@ -1,19 +1,21 @@
+import { TimeAgo } from '@/components/ui/TimeAgo';
+import { useT } from '@/i18n/t';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { Meta } from '@/components/ui/Meta';
 import { Status } from '@/components/ui/Status';
 import { Tag } from '@/components/ui/Tag';
-import { timeAgo } from '@/lib/format';
 import type { FeedItem } from '@/server/wiki/queries';
 
 export function NewsRow({ item }: { item: FeedItem }) {
+  const t = useT();
   if (item.sponsored) {
     return (
       <div className="flex gap-4 border-t border-line py-3.5">
         <div className="hidden h-[72px] w-32 shrink-0 border border-dashed border-line sm:block" />
         <div className="flex flex-col gap-1.5">
           <p className="text-[17px] font-semibold">{item.title}</p>
-          <Meta><span>Sponsored</span><span>{item.source}</span></Meta>
+          <Meta><span>{t('Sponsored')}</span><span>{item.source}</span></Meta>
         </div>
       </div>
     );
@@ -33,7 +35,7 @@ export function NewsRow({ item }: { item: FeedItem }) {
           {item.game && <Tag>{item.game}</Tag>}
           {item.status && <Status kind={item.status} />}
           <span>{item.source}</span>
-          <span>{timeAgo(item.publishedAt)}</span>
+          <span><TimeAgo date={item.publishedAt} /></span>
         </Meta>
       </div>
     </article>

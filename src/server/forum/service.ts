@@ -29,8 +29,8 @@ export async function createPost(input: { threadId: number; parentId?: number; a
     const [thread] = await tx.select({ authorId: threads.authorId, slug: threads.slug, title: threads.title, channel: channels.slug }).from(threads).innerJoin(channels, eq(threads.channelId, channels.id)).where(eq(threads.id, input.threadId));
     const href = `/forums/${thread!.channel}/${thread!.slug}`;
     const [parent] = input.parentId ? await tx.select({ authorId: posts.authorId }).from(posts).where(eq(posts.id, input.parentId)) : [];
-    await notify(tx, { userId: thread!.authorId, actorId: input.authorId, title: `New reply in ${thread!.title}`, href });
-    if (parent?.authorId !== thread!.authorId) await notify(tx, { userId: parent?.authorId ?? null, actorId: input.authorId, title: `Someone replied to you in ${thread!.title}`, href });
+    await notify(tx, { userId: thread!.authorId, actorId: input.authorId, title: 'New reply in {title}', vars: { title: thread!.title }, href });
+    if (parent?.authorId !== thread!.authorId) await notify(tx, { userId: parent?.authorId ?? null, actorId: input.authorId, title: 'Someone replied to you in {title}', vars: { title: thread!.title }, href });
     return post!;
   });
 }

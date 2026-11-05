@@ -1,4 +1,5 @@
 import { and, asc, desc, eq, inArray, sql, type SQL } from 'drizzle-orm';
+import { localize } from '@/i18n/localize';
 import { db, schema } from '@/server/db';
 import { REMOVED, nest } from '@/server/wiki/community';
 
@@ -12,11 +13,12 @@ const ORDER: Record<Sort, SQL> = {
   top: sql`${threads.score} DESC`,
 };
 
-export async function getChannels() {
-  return db
-    .select({ id: channels.id, slug: channels.slug, name: channels.name, description: channels.description, count: sql<number>`(select count(*)::int from ${threads} where ${threads.channelId} = ${channels.id})` })
+export async function getChannels(locale = 'en') {
+  const rows = await db
+    .select({ id: channels.id, slug: channels.slug, name: channels.name, description: channels.description, i18n: channels.i18n, count: sql<number>`(select count(*)::int from ${threads} where ${threads.channelId} = ${channels.id})` })
     .from(channels)
     .orderBy(asc(channels.sortOrder));
+  return rows.map(c => localize(c, locale));
 }
 
 export async function getTags() {
@@ -51,7 +53,7 @@ export function getThreadsAbout(names: string[], limit = 3) {
     .limit(limit);
 }
 
-export async function getThread(channelSlug: string, slug: string) {
+export async function getThread(channelSlug: string, slug: string, locale = 'en') {
   const [row] = await db
     .select({ thread: threads, channel: channels, author: profiles.username, avatar: profiles.avatar, role: profiles.role })
     .from(threads)
@@ -66,5 +68,5 @@ export async function getThread(channelSlug: string, slug: string) {
     db.select({ id: posts.id, parentId: posts.parentId, body: posts.body, removed: posts.removed, spoiler: posts.spoiler, score: posts.score, createdAt: posts.createdAt, author: profiles.username, avatar: profiles.avatar, role: profiles.role }).from(posts).leftJoin(profiles, eq(posts.authorId, profiles.userId)).where(eq(posts.threadId, row.thread.id)).orderBy(desc(posts.score), asc(posts.createdAt)),
   ]);
   const visible = replies.map(({ removed, ...p }) => (removed ? { ...p, body: REMOVED, author: null, avatar: null, role: null, spoiler: false } : p));
-  return { ...row, tags: threadTagRows.map(t => t.slug), related, replies: nest(visible) };
+  return { ...row, channel: localize(row.channel, locale), tags: threadTagRows.map(t => t.slug), related, replies: nest(visible) };
 }

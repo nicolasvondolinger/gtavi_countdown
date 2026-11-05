@@ -29,6 +29,20 @@
       "when": 1793848128259,
       "tag": "0003_notifications_moderation",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793884050561,
+      "tag": "0004_i18n_videos",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793884513744,
+      "tag": "0005_notifications_i18n",
+      "breakpoints": true
     }
   ]
 }

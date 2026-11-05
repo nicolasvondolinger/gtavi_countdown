@@ -14,9 +14,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     db.select({ slug: threads.slug, channel: channels.slug, at: threads.lastActivityAt }).from(threads).innerJoin(channels, eq(threads.channelId, channels.id)),
   ]);
   const url = (path: string) => `${SITE_URL}${path}`;
-  return [
+  const english: MetadataRoute.Sitemap = [
     { url: url('/'), changeFrequency: 'daily', priority: 1 },
     { url: url('/games'), priority: 0.8 },
+    { url: url('/videos'), priority: 0.7 },
+    { url: url('/about'), priority: 0.4 },
+    { url: url('/policies'), priority: 0.4 },
     { url: url('/news'), changeFrequency: 'hourly', priority: 0.8 },
     { url: url('/forums'), changeFrequency: 'hourly', priority: 0.7 },
     { url: url('/database/vehicles/compare'), priority: 0.6 },
@@ -25,4 +28,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...newsRows.map(n => ({ url: url(`/news/${n.slug}`), lastModified: n.publishedAt, priority: 0.6 })),
     ...threadRows.map(t => ({ url: url(`/forums/${t.channel}/${t.slug}`), lastModified: t.at, priority: 0.4 })),
   ];
+  // Portuguese is the same page under /pt.
+  const withPortuguese = (entry: MetadataRoute.Sitemap[number]) => {
+    const path = entry.url.slice(SITE_URL.length);
+    const pt = `${SITE_URL}/pt${path === '/' ? '' : path}`;
+    return { ...entry, alternates: { languages: { en: entry.url, pt } } };
+  };
+  return english.flatMap(entry => {
+    const both = withPortuguese(entry);
+    return [both, { ...both, url: both.alternates.languages.pt }];
+  });
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { useT } from '@/i18n/t';
 import Image from 'next/image';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
@@ -29,16 +30,18 @@ export function SpoilerScope({ children }: { children: ReactNode }) {
 }
 
 export function BlurToggle() {
+  const t = useT();
   const { blur, change } = useContext(BlurContext);
   return (
     <label className="flex cursor-pointer items-center gap-2 text-sm whitespace-nowrap">
       <input type="checkbox" checked={blur} onChange={e => change(e.target.checked)} className="size-4 accent-accent" />
-      Blur spoilers
+      {t('Blur spoilers')}
     </label>
   );
 }
 
-export function SpoilerImage({ src, spoiler, className = '', label = 'Spoiler', sizes }: { src: string; spoiler: boolean; className?: string; label?: string; sizes: string }) {
+export function SpoilerImage({ src, spoiler, className = '', label, sizes }: { src: string; spoiler: boolean; className?: string; label?: string; sizes: string }) {
+  const t = useT();
   const { blur } = useContext(BlurContext);
   const [shown, setShown] = useState(false);
   const hidden = spoiler && blur && !shown;
@@ -47,8 +50,8 @@ export function SpoilerImage({ src, spoiler, className = '', label = 'Spoiler', 
       <Image src={src} alt="" fill sizes={sizes} className={`object-cover ${hidden ? 'scale-110 blur-xl' : ''}`} />
       {hidden && (
         <button type="button" onClick={e => { e.preventDefault(); setShown(true); }} className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-bg/70 text-[15px] font-semibold">
-          {label}
-          <span className="text-sm text-accent">Show</span>
+          {label ?? t('Spoiler')}
+          <span className="text-sm text-accent">{t('Show')}</span>
         </button>
       )}
     </div>

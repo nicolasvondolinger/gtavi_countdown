@@ -1,12 +1,16 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
+import { useT } from '@/i18n/t';
+import { useRouter } from '@/i18n/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { Icon } from '@/components/ui/Icon';
 import { Tag } from '@/components/ui/Tag';
 import type { Suggestion } from '@/server/search/queries';
 
 export function SearchBox({ wide, initial = '' }: { wide?: boolean; initial?: string }) {
+  const t = useT();
+  const locale = useLocale();
   const router = useRouter();
   const [q, setQ] = useState(initial);
   const [items, setItems] = useState<Suggestion[]>([]);
@@ -20,7 +24,7 @@ export function SearchBox({ wide, initial = '' }: { wide?: boolean; initial?: st
     const ctrl = new AbortController();
     const id = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/search/suggest?q=${encodeURIComponent(term)}`, { signal: ctrl.signal });
+        const res = await fetch(`/api/search/suggest?q=${encodeURIComponent(term)}&locale=${locale}`, { signal: ctrl.signal });
         const data = (await res.json()) as { suggestions: Suggestion[] };
         setItems(data.suggestions);
         setActive(-1);
@@ -32,7 +36,7 @@ export function SearchBox({ wide, initial = '' }: { wide?: boolean; initial?: st
       clearTimeout(id);
       ctrl.abort();
     };
-  }, [q]);
+  }, [q, locale]);
 
   const shown = open && q.trim().length >= 2 && items.length > 0;
   const go = (href: string) => {
@@ -69,7 +73,7 @@ export function SearchBox({ wide, initial = '' }: { wide?: boolean; initial?: st
       onBlur={e => {
         if (!box.current?.contains(e.relatedTarget)) setOpen(false);
       }}
-      className={`relative ${wide ? 'w-full' : 'w-[300px] min-w-[150px] shrink'}`}
+      className={`relative ${wide ? 'w-full' : 'w-[300px] min-w-[110px] shrink'}`}
     >
       <div className="flex items-center gap-2 rounded-control border border-line bg-surface px-2.5 py-2 focus-within:border-accent">
         <Icon name="search" className="shrink-0 text-muted" />
@@ -87,14 +91,14 @@ export function SearchBox({ wide, initial = '' }: { wide?: boolean; initial?: st
           aria-controls="search-suggestions"
           aria-autocomplete="list"
           aria-activedescendant={active >= 0 ? `suggestion-${active}` : undefined}
-          aria-label="Search the wiki"
-          placeholder="Search the wiki"
+          aria-label={t('Search the wiki')}
+          placeholder={t('Search the wiki')}
           autoComplete="off"
           className="min-w-0 flex-1 bg-transparent text-sm text-text outline-none placeholder:text-dim"
         />
       </div>
       {shown && (
-        <ul id="search-suggestions" role="listbox" aria-label="Suggestions" className="absolute inset-x-0 top-full z-50 mt-1 min-w-[320px] rounded-panel border border-edge bg-bg p-1.5 shadow-[0_12px_32px_#00000099]">
+        <ul id="search-suggestions" role="listbox" aria-label={t('Suggestions')} className="absolute inset-x-0 top-full z-50 mt-1 min-w-[320px] rounded-panel border border-edge bg-bg p-1.5 shadow-[0_12px_32px_#00000099]">
           {items.map((s, i) => (
             <li key={s.href} id={`suggestion-${i}`} role="option" aria-selected={i === active}>
               <button type="button" onClick={() => go(s.href)} className={`flex w-full items-center gap-3 rounded-control px-2 py-2 text-left hover:bg-raised ${i === active ? 'bg-raised' : ''}`}>
@@ -108,7 +112,7 @@ export function SearchBox({ wide, initial = '' }: { wide?: boolean; initial?: st
           ))}
           <li role="option" aria-selected={active === items.length} className="mt-1 border-t border-line">
             <button type="button" onClick={() => go(`/search?q=${encodeURIComponent(q.trim())}`)} className={`w-full px-2 py-2.5 text-left text-sm font-semibold text-accent ${active === items.length ? 'bg-raised' : ''}`}>
-              All results in every game
+              {t('All results in every game')}
             </button>
           </li>
         </ul>

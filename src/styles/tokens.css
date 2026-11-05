@@ -12,12 +12,17 @@
   --color-muted: #9ca3af;
   --color-dim: #858c99;
   --color-accent: #ff2a75;
+  --color-accent-hover: #ff5590;
   --color-ink: #0b0e14;
   --color-official: #00e5ff;
   --color-leak: #ffb800;
   --color-theory: #c9ced8;
   --color-added: #34d399;
   --color-removed: #f87171;
+  --color-water: #0d1a24;
+  --color-land: #1a2130;
+  --color-land-edge: #2b3446;
+  --color-marsh: #1c2a26;
 
   --radius-image: 2px;
   --radius-control: 4px;
@@ -28,4 +33,31 @@
   --font-ui: var(--font-barlow), system-ui, sans-serif;
   --font-read: var(--font-archivo), system-ui, sans-serif;
   --font-data: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+/* Dark is the base. The light theme swaps the same names, so components stay theme-blind. */
+[data-theme='light'] {
+  --color-bg: #ffffff;
+  --color-surface: #f4f5f7;
+  --color-raised: #e9ebef;
+  --color-line: #dde0e6;
+  --color-edge: #c5cad3;
+  --color-control: #767e8c;
+  --color-text: #12151c;
+  --color-body: #2b303b;
+  --color-soft: #3d4350;
+  --color-muted: #555c69;
+  --color-dim: #5f6878;
+  --color-accent: #d6125f;
+  --color-accent-hover: #b30e4f;
+  --color-ink: #ffffff;
+  --color-official: #006d7b;
+  --color-leak: #8a5a00;
+  --color-theory: #4b5363;
+  --color-added: #086b46;
+  --color-removed: #c62828;
+  --color-water: #c9dfe8;
+  --color-land: #eef0e8;
+  --color-land-edge: #b9bfae;
+  --color-marsh: #cfe0cd;
 }

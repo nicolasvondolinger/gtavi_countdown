@@ -34,6 +34,18 @@ The GTA VI countdown that used to live in this repo is now part of the home page
 
 Reference scale: launch-week spike of read traffic, low write volume. Reads must survive on cached HTML; writes go to one Postgres.
 
+## Languages and themes
+
+English has no URL prefix; Portuguese lives under `/pt`, so both languages stay cacheable and indexable. `src/proxy.ts` (next-intl) picks the language from the saved cookie, then from `Accept-Language`. The header switch writes the cookie.
+
+- Interface text: the English sentence is the key. `t('...')` looks it up in `src/i18n/pt.ts` and falls back to English. `tests/unit/i18n.test.ts` fails when a key is missing or its placeholders differ. Word order changes by language, so write whole sentences with `{placeholders}`, never joined fragments.
+- Facts in the database: a row carries `i18n.pt`, and `localize(row, locale)` overlays it. Game hubs, page titles, summaries, infoboxes, news and channels work this way.
+- Article text: each language has its own revisions. `revisions.locale` says which, and `pages.current_revision_pt` points at the Portuguese text. An untranslated page shows English with a note. Review works the same in both languages.
+- Community content (threads, comments, theories) stays in the language it was written in.
+- Cached pages must call `pageLocale(params)` before anything reads the locale, or they turn dynamic.
+
+Themes: dark is the base, and `[data-theme='light']` in `src/styles/tokens.css` swaps the same token names. A small inline script sets the theme before first paint, from the saved choice or `prefers-color-scheme`. Colours in components must be tokens.
+
 ## Rendering and caching
 
 | Route type | Strategy |
@@ -59,6 +71,8 @@ Reference scale: launch-week spike of read traffic, low write volume. Reads must
 /database/builds/new                   build creator
 /b/[code]                              shared build
 /news                                  news and rumors
+/videos?game=&kind=                    official Rockstar videos, player loads on click
+/about, /policies, /privacy, /terms     site pages
 /forums, /forums/[channel]             forum
 /forums/[channel]/[thread]             thread
 /u/[username]                          profile
@@ -144,7 +158,7 @@ design/                source of truth for screens
 
 - `npm run lint`, `npm run typecheck`, `npm test` and `npm run build` must pass before an issue closes.
 - Integration tests cover the review flow, reputation, voting and permissions on real Postgres.
-- Playwright runs the main flows at 1440 and 390.
+- Playwright runs the main flows at 1440 and 390 against `gtawiki_e2e`, a database rebuilt on every run by `tests/e2e-db.ts`, so tests never touch development data.
 
 ## Deployment
 

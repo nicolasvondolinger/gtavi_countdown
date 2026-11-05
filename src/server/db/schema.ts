@@ -107,6 +107,7 @@ export const games = pgTable('games', {
   image: text('image'),
   // Label and value pairs shown on the game hub.
   facts: jsonb('facts').$type<{ label: string; value: string }[]>().notNull().default([]),
+  i18n: jsonb('i18n').$type<{ pt?: { summary?: string; setting?: string; leads?: string; facts?: { label: string; value: string }[] } }>().notNull().default({}),
 });
 
 export const profiles = pgTable(
@@ -145,6 +146,9 @@ export const pages = pgTable(
     image: text('image'),
     infobox: jsonb('infobox').$type<{ label: string; value: string; status?: 'official' | 'leak' | 'theory' }[]>().notNull().default([]),
     gallery: jsonb('gallery').$type<string[]>().notNull().default([]),
+    video: text('video'),
+    i18n: jsonb('i18n').$type<{ pt?: { title?: string; summary?: string; source?: string; infobox?: { label: string; value: string }[] } }>().notNull().default({}),
+    currentRevisionPt: integer('current_revision_pt').references((): AnyPgColumn => revisions.id),
     currentRevisionId: integer('current_revision_id').references((): AnyPgColumn => revisions.id),
     views: integer('views').notNull().default(0),
     search: tsvector('search').generatedAlwaysAs(
@@ -175,6 +179,7 @@ export const revisions = pgTable(
     source: text('source'),
     state: revisionState('state').notNull(),
     sizeDelta: integer('size_delta').notNull().default(0),
+    locale: text('locale').notNull().default('en'),
     createdAt: createdAt(),
     closedAt: timestamp('closed_at', { withTimezone: true }),
   },
@@ -220,6 +225,7 @@ export const notifications = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
+    i18n: jsonb('i18n').$type<{ pt?: { title?: string } }>().notNull().default({}),
     href: text('href').notNull(),
     readAt: timestamp('read_at', { withTimezone: true }),
     createdAt: createdAt(),
@@ -318,6 +324,7 @@ export const channels = pgTable('channels', {
   name: text('name').notNull(),
   description: text('description').notNull().default(''),
   sortOrder: integer('sort_order').notNull().default(0),
+  i18n: jsonb('i18n').$type<{ pt?: { name?: string; description?: string } }>().notNull().default({}),
 });
 
 export const threads = pgTable(
@@ -439,9 +446,23 @@ export const news = pgTable(
     source: text('source').notNull(),
     image: text('image'),
     sponsored: boolean('sponsored').notNull().default(false),
+    i18n: jsonb('i18n').$type<{ pt?: { title?: string; excerpt?: string; body?: string } }>().notNull().default({}),
     publishedAt: timestamp('published_at', { withTimezone: true }).notNull().defaultNow(),
   },
   t => [index('news_published_idx').on(t.publishedAt)],
+);
+
+export const videos = pgTable(
+  'videos',
+  {
+    youtubeId: text('youtube_id').primaryKey(),
+    title: text('title').notNull(),
+    gameId: integer('game_id').references(() => games.id),
+    kind: text('kind').notNull(),
+    // Newest first, as the official channel lists them.
+    position: integer('position').notNull(),
+  },
+  t => [index('videos_game_idx').on(t.gameId, t.position)],
 );
 
 export const vehicles = pgTable(

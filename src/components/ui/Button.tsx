@@ -1,9 +1,9 @@
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import type { ComponentProps } from 'react';
 
 type Kind = 'primary' | 'secondary';
 const kinds: Record<Kind, string> = {
-  primary: 'bg-accent text-ink hover:bg-[#ff5590]',
+  primary: 'bg-accent text-ink hover:bg-accent-hover',
   secondary: 'border border-edge text-text hover:border-control',
 };
 const base = 'inline-flex items-center justify-center gap-2 rounded-control px-[18px] py-2.5 text-[15px] font-semibold transition-colors duration-150 disabled:opacity-50';

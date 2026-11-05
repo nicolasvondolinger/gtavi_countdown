@@ -1,5 +1,6 @@
 'use client';
 
+import { useT } from '@/i18n/t';
 import { useEffect, useState } from 'react';
 
 const parts = (ms: number) => ({
@@ -12,6 +13,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 // One instant for everyone: the game launches at the same moment worldwide.
 export function Countdown({ target }: { target: string }) {
+  const t = useT();
   const end = new Date(target).getTime();
   const [now, setNow] = useState(() => Date.now());
 
@@ -21,13 +23,13 @@ export function Countdown({ target }: { target: string }) {
   }, []);
 
   const left = end - now;
-  if (left <= 0) return <p className="font-display text-[56px] leading-none">Out now</p>;
+  if (left <= 0) return <p className="font-display text-[56px] leading-none">{t('Out now')}</p>;
   const { days, hours, minutes, seconds } = parts(left);
   return (
-    <div role="timer" aria-label={`${days} days until launch`}>
+    <div role="timer" aria-label={t('{days} days until launch', { days })}>
       <p className="flex items-baseline gap-2.5">
         <span className="font-data text-[72px] leading-none font-bold lg:text-[96px]" suppressHydrationWarning>{days}</span>
-        <span className="text-[26px] text-muted">{days === 1 ? 'day' : 'days'}</span>
+        <span className="text-[26px] text-muted">{days === 1 ? t('day') : t('days')}</span>
       </p>
       <p className="mt-1 font-data text-[21px] text-soft" suppressHydrationWarning>
         {pad(hours)} h {pad(minutes)} m {pad(seconds)} s

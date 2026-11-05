@@ -1,3 +1,5 @@
+import { cookies } from 'next/headers';
+import { translate } from '@/i18n/translate';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { nextCookies } from 'better-auth/next-js';
@@ -29,6 +31,8 @@ export async function freeUsername(name: string) {
   return `player${Date.now().toString(36)}`;
 }
 
+const requestLocale = async () => (await cookies()).get('NEXT_LOCALE')?.value ?? 'en';
+
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
   secret: env.BETTER_AUTH_SECRET,
@@ -42,14 +46,16 @@ export const auth = betterAuth({
     minPasswordLength: 12,
     autoSignIn: true,
     sendResetPassword: async ({ user, url }) => {
-      await sendEmail({ to: user.email, subject: 'Reset your GTA Wiki password', text: `Use this link to set a new password:\n\n${url}\n\nIf you did not ask for this, ignore this email.` });
+      const locale = await requestLocale();
+      await sendEmail({ to: user.email, subject: translate(locale, 'Reset your GTA Wiki password'), text: translate(locale, 'Use this link to set a new password:\n\n{url}\n\nIf you did not ask for this, ignore this email.', { url }) });
     },
   },
   emailVerification: {
     sendOnSignUp: emailEnabled(),
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
-      await sendEmail({ to: user.email, subject: 'Verify your GTA Wiki email', text: `Confirm your email address:\n\n${url}` });
+      const locale = await requestLocale();
+      await sendEmail({ to: user.email, subject: translate(locale, 'Verify your GTA Wiki email'), text: translate(locale, 'Confirm your email address:\n\n{url}', { url }) });
     },
   },
   socialProviders: { ...(google && { google }), ...(discord && { discord }), ...(apple && { apple }) },

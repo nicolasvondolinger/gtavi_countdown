@@ -1,11 +1,11 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidateLocales } from '@/server/revalidate';
 import { requireViewer } from '@/server/auth/session';
 import { markAllRead } from './notifications';
 
 export async function readAll() {
   const viewer = await requireViewer('/notifications');
   await markAllRead(viewer.user.id);
-  revalidatePath('/notifications');
+  revalidateLocales('/notifications');
 }

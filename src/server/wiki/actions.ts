@@ -1,8 +1,10 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidateLocales } from '@/server/revalidate';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+import { getLocale } from 'next-intl/server';
+import { getT } from '@/i18n/server';
 import { requireViewer } from '@/server/auth/session';
 import { ReviewError, castReviewVote, createRevision } from './review';
 
@@ -19,17 +21,18 @@ const edit = z.object({
 export type EditState = { error?: string };
 
 export async function saveEdit(_: EditState, form: FormData): Promise<EditState> {
+  const t = await getT();
   const parsed = edit.safeParse(Object.fromEntries(form));
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Check the form and try again.' };
+  if (!parsed.success) return { error: t(parsed.error.issues[0]?.message ?? 'Check the form and try again.') };
   const { path, ...input } = parsed.data;
   const viewer = await requireViewer(`${path}/edit`);
   try {
-    await createRevision({ ...input, authorId: viewer.user.id });
+    await createRevision({ ...input, authorId: viewer.user.id, locale: await getLocale() });
   } catch (e) {
-    if (e instanceof ReviewError) return { error: e.message };
+    if (e instanceof ReviewError) return { error: t(e.message) };
     throw e;
   }
-  revalidatePath(path);
+  revalidateLocales(path);
   redirect(`${path}/history`);
 }
 
@@ -38,6 +41,6 @@ export async function voteOnEdit(form: FormData) {
   const viewer = await requireViewer(`${path}/history`);
   const vote = form.get('vote') === 'keep' ? 'keep' : 'revert';
   await castReviewVote(Number(form.get('revisionId')), viewer.user.id, vote);
-  revalidatePath(path);
-  revalidatePath(`${path}/history`);
+  revalidateLocales(path);
+  revalidateLocales(`${path}/history`);
 }
